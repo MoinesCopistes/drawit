@@ -8,7 +8,16 @@ app.static("/", "./static/index.html", name="index")
 app.static("/plan", "./static/plan.html", name="plan")
 app.static("/draw", "./static/draw.html", name="draw")
 
+connections = set()
+
 @app.websocket("/feed")
 async def feed(request: Request, ws: Websocket):
-    async for msg in ws:
-        await ws.send(msg)
+    connections.add(ws)
+    try:
+        async for msg in ws:
+            # broadcast
+            for client in connections:
+                await client.send(msg)
+    finally:
+        # Removing connections when it closes
+        connections.remove(ws)
