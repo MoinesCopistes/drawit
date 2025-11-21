@@ -8,6 +8,43 @@
 <body>
 This is were you make the image composition.
 
+
 Clients can join to draw <a href="/draw">here.</a>	
+
+<div id="stage">
+  <canvas id="painting" width="500" height="500" style="border:1px solid #000000;"></canvas>
+  <canvas id="map" width="500" height="500" style="border:1px solid #000000;"></canvas>
+</div>
+
+<style>
+#stage {
+  width: 500px;
+  height: 500px;
+  position: relative;
+}
+
+canvas {
+  position: absolute;
+}
+
+#map {
+  z-index: 1;
+}
+#painting {
+  z-index: 0;
+}
+
+</style>
+
+
+<script type="module">
+
+import {Map} from "/static/map.js"
+
+let map = new Map("map")
+map.setupHandlers();
+
+</script>
+
 </body>
 </html>
