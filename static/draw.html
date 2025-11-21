@@ -1,11 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>Drawit - Canvas</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script src="https://unpkg.com/lucide@latest"></script>
+	<style>
+		body {
+			overflow: hidden;
+			/* Prevent native scrolling */
+			touch-action: none;
+			/* Prevent native touch actions like pull-to-refresh */
+		}
+
+		/* Custom cursors based on mode */
+		.cursor-draw {
+			cursor: crosshair;
+		}
+
+		.cursor-grab {
+			cursor: grab;
+		}
+
+		.cursor-grabbing {
+			cursor: grabbing;
+		}
+	</style>
 </head>
-<body>
-This is the drawing page !!!	
+
+<body class="bg-gray-100 w-screen h-screen relative">
+
+	<!-- UI OVERLAY -->
+	<div class="absolute top-0 left-0 w-full h-full pointer-events-none z-10 p-4 flex justify-between items-start">
+
+		<!-- Top Left: Color Picker (Only visible in Drawing Mode) -->
+		<div id="colorTool" class="pointer-events-auto transition-opacity duration-300">
+			<div class="relative group">
+				<input type="color" id="colorInput" value="#000000"
+					class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-20">
+				<button
+					class="bg-white p-3 rounded-xl shadow-lg border border-gray-200 flex items-center gap-2 hover:scale-105 transition-transform">
+					<div id="colorPreview" class="w-6 h-6 rounded-full bg-black border border-gray-300"></div>
+					<span class="text-sm font-medium text-gray-700 hidden sm:block">Color</span>
+				</button>
+			</div>
+		</div>
+
+		<!-- Top Right: Mode Switcher -->
+		<div class="pointer-events-auto flex flex-col items-end gap-2">
+			<button id="modeSwitch"
+				class="bg-indigo-600 text-white p-3 rounded-xl shadow-lg hover:bg-indigo-700 transition-all active:scale-95 flex items-center gap-2">
+				<i id="modeIcon" data-lucide="pen-tool" class="w-5 h-5"></i>
+				<span id="modeText" class="text-sm font-medium hidden sm:block">Drawing Mode</span>
+			</button>
+
+			<!-- Info Toast -->
+			<div id="modeToast"
+				class="bg-gray-800 text-white text-xs py-1 px-3 rounded-lg opacity-0 transition-opacity duration-500">
+				Switched to View Mode
+			</div>
+		</div>
+	</div>
+
+	<!-- CANVAS -->
+	<canvas id="canvas" class="block bg-gray-50 w-full h-full"></canvas>
+
+	<script>
+		lucide.createIcons();
+
+		// --- CONFIGURATION ---
+		const WORLD_WIDTH = 2000;
+		const WORLD_HEIGHT = 2000;
+		const MIN_ZOOM = 0.1;
+		const MAX_ZOOM = 5.0;
+
+		// --- STATE ---
+		let mode = 'drawing'; // 'drawing' or 'view'
+		let currentColor = '#000000';
+
+		// Viewport State
+		let scale = 1;
+		let offsetX = 0;
+		let offsetY = 0;
+
+		// Interaction State
+		let isDragging = false;
+		let lastX = 0;
+		let lastY = 0;
+
+		// --- DOM ELEMENTS ---
+		const canvas = document.getElementById('canvas');
+		const ctx = canvas.getContext('2d');
+		const colorInput = document.getElementById('colorInput');
+		const colorPreview = document.getElementById('colorPreview');
+		const colorTool = document.getElementById('colorTool');
+		const modeSwitch = document.getElementById('modeSwitch');
+		const modeIcon = document.getElementById('modeIcon');
+		const modeText = document.getElementById('modeText');
+		const modeToast = document.getElementById('modeToast');
+
+		// --- INITIALIZATION ---
+		function resize() {
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+
+			// Center the world initially
+			offsetX = (canvas.width - WORLD_WIDTH) / 2;
+			offsetY = (canvas.height - WORLD_HEIGHT) / 2;
+
+			drawFrame();
+		}
+		window.addEventListener('resize', resize);
+		resize(); // Initial call
+
+		// --- CORE FUNCTIONS ---
+
+		// 1. Toggle Modes
+		modeSwitch.addEventListener('click', () => {
+			if (mode === 'drawing') {
+				mode = 'view';
+				modeText.innerText = "View Mode";
+				canvas.className = "cursor-grab";
+				colorTool.style.opacity = '0'; // Hide color picker
+				colorTool.style.pointerEvents = 'none';
+
+				// Update Icon (requires re-running lucide for dynamic content or replacing SVG)
+				// Simple text/style update for this demo:
+				modeSwitch.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+				modeSwitch.classList.add('bg-green-600', 'hover:bg-green-700');
+				showToast("View Mode: Drag to pan, Scroll to zoom");
+			} else {
+				mode = 'drawing';
+				modeText.innerText = "Drawing Mode";
+				canvas.className = "cursor-draw";
+				colorTool.style.opacity = '1';
+				colorTool.style.pointerEvents = 'auto';
+
+				modeSwitch.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+				modeSwitch.classList.remove('bg-green-600', 'hover:bg-green-700');
+				showToast("Drawing Mode: Click to draw");
+			}
+		});
+
+		// 2. Color Picker Logic
+		colorInput.addEventListener('input', (e) => {
+			currentColor = e.target.value;
+			colorPreview.style.backgroundColor = currentColor;
+		});
+
+		function showToast(msg) {
+			modeToast.innerText = msg;
+			modeToast.style.opacity = '1';
+			setTimeout(() => {modeToast.style.opacity = '0';}, 2000);
+		}
+
+		// --- INPUT HANDLING ---
+
+		// Helper to get coordinates (Touch or Mouse)
+		function getEventPos(e) {
+			if (e.touches && e.touches.length > 0) {
+				return {x: e.touches[0].clientX, y: e.touches[0].clientY};
+			}
+			return {x: e.clientX, y: e.clientY};
+		}
+
+		// Start Action
+		const startAction = (e) => {
+			e.preventDefault(); // Prevent text selection
+			isDragging = true;
+			const pos = getEventPos(e);
+			lastX = pos.x;
+			lastY = pos.y;
+
+			if (mode === 'view') {
+				canvas.classList.replace('cursor-grab', 'cursor-grabbing');
+			} else if (mode === 'drawing') {
+				// Calculate World Coordinates
+				// logic: (ScreenCoord - Offset) / Scale
+				const worldX = (pos.x - offsetX) / scale;
+				const worldY = (pos.y - offsetY) / scale;
+
+				// Check boundaries before drawing
+				if (worldX >= 0 && worldX <= WORLD_WIDTH && worldY >= 0 && worldY <= WORLD_HEIGHT) {
+					// START DRAWING LOGIC HERE
+					// console.log(`Start Drawing at World: ${worldX}, ${worldY}`);
+				}
+			}
+		};
+
+		// Move Action
+		const moveAction = (e) => {
+			if (!isDragging) return;
+			e.preventDefault();
+
+			const pos = getEventPos(e);
+			const deltaX = pos.x - lastX;
+			const deltaY = pos.y - lastY;
+
+			if (mode === 'view') {
+				// --- PANNING LOGIC ---
+				offsetX += deltaX;
+				offsetY += deltaY;
+				clampOffsets(); // Apply Barriers
+				drawFrame(); // Redraw grid/canvas
+			} else if (mode === 'drawing') {
+				// --- DRAWING LOGIC ---
+				const worldX = (pos.x - offsetX) / scale;
+				const worldY = (pos.y - offsetY) / scale;
+
+				if (worldX >= 0 && worldX <= WORLD_WIDTH && worldY >= 0 && worldY <= WORLD_HEIGHT) {
+					// CONTINUE DRAWING LOGIC HERE
+					// console.log(`Draw at: ${worldX}, ${worldY}`);
+				}
+			}
+
+			lastX = pos.x;
+			lastY = pos.y;
+		};
+
+		// End Action
+		const endAction = () => {
+			isDragging = false;
+			if (mode === 'view') {
+				canvas.classList.replace('cursor-grabbing', 'cursor-grab');
+			}
+		};
+
+		// Zoom Logic (Wheel / Pinch)
+		canvas.addEventListener('wheel', (e) => {
+			if (mode !== 'view') return;
+			e.preventDefault();
+
+			const zoomSensitivity = 0.001;
+			const delta = -e.deltaY * zoomSensitivity;
+			const newScale = Math.min(Math.max(MIN_ZOOM, scale + delta), MAX_ZOOM);
+
+			// Zoom towards mouse pointer math
+			const mouseX = e.clientX;
+			const mouseY = e.clientY;
+
+			// 1. Calculate where mouse is in the world BEFORE zoom
+			const worldMouseX = (mouseX - offsetX) / scale;
+			const worldMouseY = (mouseY - offsetY) / scale;
+
+			// 2. Update Scale
+			scale = newScale;
+
+			// 3. Calculate new offset so that world point is still under mouse
+			offsetX = mouseX - worldMouseX * scale;
+			offsetY = mouseY - worldMouseY * scale;
+
+			clampOffsets();
+			drawFrame();
+		}, {passive: false});
+
+
+		// Event Listeners
+		canvas.addEventListener('mousedown', startAction);
+		canvas.addEventListener('mousemove', moveAction);
+		canvas.addEventListener('mouseup', endAction);
+		canvas.addEventListener('mouseleave', endAction);
+
+		canvas.addEventListener('touchstart', startAction, {passive: false});
+		canvas.addEventListener('touchmove', moveAction, {passive: false});
+		canvas.addEventListener('touchend', endAction);
+
+
+		// --- BARRIER LOGIC ---
+		function clampOffsets() {
+			// Ensure we can't drag the world completely off screen
+			// Allow dragging until the edge of the world hits the center of screen
+
+			const viewWidth = canvas.width;
+			const viewHeight = canvas.height;
+			const scaledWorldW = WORLD_WIDTH * scale;
+			const scaledWorldH = WORLD_HEIGHT * scale;
+
+			// Simple barrier: Don't let the drawing area go completely out of view
+			// Min offset: The right side of the world shouldn't pass the left side of screen (+ buffer)
+			// Max offset: The left side of world shouldn't pass right side of screen
+
+			const buffer = 100; // Pixels of buffer
+
+			if (scaledWorldW < viewWidth) {
+				// If zoomed out enough that world fits, center it or clamp tightly? 
+				// Let's just loose clamp.
+			}
+
+			// Note: In a real app, you might want stricter clamping (e.g. can't see outside world)
+			// For now, this prevents losing the canvas.
+			const minX = viewWidth - scaledWorldW - buffer;
+			const maxX = buffer;
+			const minY = viewHeight - scaledWorldH - buffer;
+			const maxY = buffer;
+
+			// Use this if you want strict "cannot see outside canvas" behavior:
+			// if (scaledWorldW > viewWidth) {
+			//    offsetX = Math.min(0, Math.max(offsetX, viewWidth - scaledWorldW));
+			// } else {
+			//    offsetX = (viewWidth - scaledWorldW) / 2; // Force center if fits
+			// }
+
+			// Currently using loose bounds so it feels fluid
+		}
+
+
+		// --- VISUALIZATION (The Grid) ---
+		// This function simulates the "view" by drawing a grid
+		function drawFrame() {
+			// Clear Screen (Screen coordinates)
+			ctx.setTransform(1, 0, 0, 1, 0, 0);
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			// Apply Camera Transform (Pan & Zoom)
+			ctx.setTransform(scale, 0, 0, scale, offsetX, offsetY);
+
+			// 1. Draw World Background (Paper)
+			ctx.fillStyle = "white";
+			ctx.fillRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+
+			// 2. Draw Grid (Visual Aid)
+			ctx.strokeStyle = "#e5e7eb"; // Light gray
+			ctx.lineWidth = 1 / scale; // Keep lines thin regardless of zoom
+
+			const gridSize = 50;
+			ctx.beginPath();
+			for (let x = 0; x <= WORLD_WIDTH; x += gridSize) {
+				ctx.moveTo(x, 0);
+				ctx.lineTo(x, WORLD_HEIGHT);
+			}
+			for (let y = 0; y <= WORLD_HEIGHT; y += gridSize) {
+				ctx.moveTo(0, y);
+				ctx.lineTo(WORLD_WIDTH, y);
+			}
+			ctx.stroke();
+
+			// 3. Draw World Border
+			ctx.strokeStyle = "#4f46e5"; // Indigo border
+			ctx.lineWidth = 4 / scale;
+			ctx.strokeRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+
+			// 4. Placeholder for "Drawing Data" would be rendered here
+			// e.g. storedPaths.forEach(path => ctx.stroke(path));
+
+			// Visual Text in the middle
+			ctx.fillStyle = "#9ca3af";
+			ctx.font = "40px sans-serif";
+			ctx.textAlign = "center";
+			ctx.fillText("Start Drawing Here", WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
+		}
+
+	</script>
 </body>
+
 </html>
