@@ -7,5 +7,14 @@
 </head>
 <body>
 This is the drawing page !!!	
+
+
+<script type="module">
+  import {setupWebsocket} from "/static/websockets.js";
+  const sendMessage = await setupWebsocket((d) => console.log("Received: ", d));
+  sendMessage("lolilol");
+
+</script>
+
 </body>
 </html>
