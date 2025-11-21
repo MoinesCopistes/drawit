@@ -1,11 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Main App</title>
+	<title>drawit</title>
+
+	<!-- Tailwind CSS -->
+	<script src="https://cdn.tailwindcss.com"></script>
+
+	<!-- Google Fonts (Inter for a clean look) -->
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+	<!-- Lucide Icons -->
+	<script src="https://unpkg.com/lucide@latest"></script>
+
+	<style>
+		body {
+			font-family: 'Inter', sans-serif;
+		}
+	</style>
 </head>
-<body>
-	<a href="/plan">Start a drawing</a>
+
+<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-4">
+
+	<!-- Main Card Container -->
+	<div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+
+		<!-- Header / Logo Area -->
+		<div class="bg-indigo-600 p-8 text-center">
+			<div class="flex justify-center mb-3">
+				<!-- Logo Icon -->
+				<div class="bg-white/20 p-3 rounded-full backdrop-blur-sm">
+					<i data-lucide="pen-tool" class="w-8 h-8 text-white"></i>
+				</div>
+			</div>
+			<h1 class="text-4xl font-bold text-white tracking-tight">drawit</h1>
+			<p class="text-indigo-100 mt-2 text-sm">Collaborative whiteboard made simple</p>
+		</div>
+
+		<!-- Action Area -->
+		<div class="p-8 space-y-8">
+
+			<!-- Section 1: Create New -->
+			<div class="text-center">
+				<button onclick="createDrawing()"
+					class="group w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+					<i data-lucide="plus-circle" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+					Create a Drawing
+				</button>
+				<p class="text-xs text-gray-400 mt-3">Start a new blank canvas instantly</p>
+			</div>
+
+			<!-- Divider -->
+			<div class="relative flex items-center py-2">
+				<div class="flex-grow border-t border-gray-200"></div>
+				<span class="flex-shrink-0 mx-4 text-gray-400 text-xs uppercase tracking-wider">Or join others</span>
+				<div class="flex-grow border-t border-gray-200"></div>
+			</div>
+
+			<!-- Section 2: Join Room -->
+			<div>
+				<label for="roomCode" class="block text-sm font-medium text-gray-700 mb-2 ml-1">
+					Join an existing room
+				</label>
+				<div class="flex shadow-sm rounded-xl overflow-hidden">
+					<input type="text" id="roomCode" placeholder="Enter room code..."
+						class="flex-1 p-3 border border-gray-300 border-r-0 rounded-l-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-gray-50 focus:bg-white transition-colors">
+					<button onclick="joinRoom()"
+						class="bg-gray-800 hover:bg-gray-900 text-white px-6 font-medium rounded-r-xl transition-colors flex items-center">
+						Join
+						<i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+					</button>
+				</div>
+				<p id="errorMessage" class="text-red-500 text-xs mt-2 hidden ml-1">Please enter a valid room code.</p>
+			</div>
+
+		</div>
+
+		<!-- Footer -->
+		<div class="bg-gray-50 p-4 text-center border-t border-gray-100">
+			<p class="text-xs text-gray-400">&copy; 2024 drawit. All rights reserved.</p>
+		</div>
+	</div>
+
+	<script>
+		// Initialize Icons
+		lucide.createIcons();
+
+		// Function to handle creating a drawing
+		function createDrawing() {
+			// Redirect to the plan page as requested
+			window.location.href = '/plan';
+		}
+
+		// Function to handle joining a room
+		function joinRoom() {
+			const codeInput = document.getElementById('roomCode');
+			const errorMessage = document.getElementById('errorMessage');
+			const code = codeInput.value.trim();
+
+			if (code) {
+				errorMessage.classList.add('hidden');
+				// Simulate joining logic (replace this with your actual routing)
+				console.log(`Joining room: ${code}`);
+
+				// Example redirect: /room/CODE
+				// window.location.href = `/room/${code}`; 
+
+				// For now, we just alert to show interaction
+				alert(`Joining room with code: ${code}`);
+			} else {
+				// Show error if empty
+				errorMessage.classList.remove('hidden');
+				codeInput.focus();
+			}
+		}
+
+		// Allow pressing "Enter" to submit the input
+		document.getElementById('roomCode').addEventListener('keypress', function (e) {
+			if (e.key === 'Enter') {
+				joinRoom();
+			}
+		});
+	</script>
 </body>
+
 </html>
