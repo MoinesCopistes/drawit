@@ -39,8 +39,8 @@
 	import {Event} from "/static/events.js"
 
   const sendMessage = await setupWebsocket(async (d) => {
-		const event = Event.deserialize(await d.arrayBuffer());
-		drawingModuleInstance.HandleEvent(event);
+		const events = Event.deserialize_list(await d.arrayBuffer());
+		events.forEach((event) => drawingModuleInstance.HandleEvent(event));
 	});
 
 	const drawingModuleInstance = new DrawingModule("DrawingCanva");
