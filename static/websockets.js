@@ -25,6 +25,7 @@ export const setupWebsocket = async (eventCallback) => {
   };
 
   await waitForOpen();
+  console.log("socket opened !")
 
 
   return (message) => {

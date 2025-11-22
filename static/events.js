@@ -2,7 +2,7 @@ export const DrawingEventType = Object.freeze({
     START: 0,
     DRAW: 1,
     END: 2,
-    ADD_ZONE: 3
+    ADD_ZONE: 3,
 });
 
 class Writer {
@@ -44,6 +44,21 @@ export class Event {
     }
     
     serialize() {
+     	let size;
+     	switch(this.type) {
+     		case DrawingEventType.START :
+     			size = 14;
+     			break;
+     		case DrawingEventType.DRAW :
+     			size = 15;
+     			break;
+     		case DrawingEventType.END :
+     			size = 10;
+     			break;
+     		case DrawingEventType.ADD_ZONE :
+     			size = 18;
+     			break;
+     	}
     	
     	const buffer = new ArrayBuffer(100, { maxByteLength: 100 });
     	const view = new DataView(buffer);
@@ -67,6 +82,8 @@ export class Event {
     			w.write("setUint8" , this.strokeId, 1);
     			break;
     		case DrawingEventType.END :
+    			break;
+    		case DrawingEventType.ASK_SNAPSHOT :
     			break;
     		case DrawingEventType.ADD_ZONE :
     			w.write("setUint16", this.x, 2);
@@ -109,6 +126,9 @@ export class Event {
     			break;
     		case DrawingEventType.END :
     			break;
+    		case DrawingEventType.ASK_SNAPSHOT :
+    			break;
+
     		case DrawingEventType.ADD_ZONE :
     			received_event.x = r.read("getUint16", 2);
     			received_event.y = r.read("getUint16", 2);
