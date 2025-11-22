@@ -16,17 +16,21 @@ connections = []
 eventsBuffer = EventBuffer()
 snapshotAskEvent = bytes([4] + [0]*9)
 
+CONNECTED_EVENT = bytes([4, 0])
+DISCONNECTED_EVENT = bytes([5, 0])
+
 @app.websocket("/feed")
 async def feed(request: Request, ws: Websocket):
     client_id = len(connections)
     client = Client(client_id, ws)
     connections.append(client)
+    await eventsBuffer.append(CONNECTED_EVENT)
 
     async def send_loop():
         try:
             while True:
-                batch = await eventsBuffer.get_batch(client)
-                await ws.send(bytes(batch))
+                batch = bytes(await eventsBuffer.get_batch(client))
+                await ws.send(batch)
         except sanic.exceptions.WebsocketClosed:
             pass
 
@@ -50,4 +54,5 @@ async def feed(request: Request, ws: Websocket):
             task.cancel()
     finally:
         connections.remove(client)
+        await eventsBuffer.append(DISCONNECTED_EVENT)
 

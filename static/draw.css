@@ -59,6 +59,13 @@
 			opacity: 1;
 		}
 
+		#usersCount {
+			top: 130px;
+			left: 20px;
+			opacity: 1;
+
+		}
+
 		/* Hide color picker when not in drawing mode */
 		body.mode-view #colorTools {
 			opacity: 0;
@@ -171,20 +178,6 @@
 			z-index: 90;
 		}
 
-		/* Mobile adjustments */
-		@media (max-width: 915px) {
-			.status-bar {
-				/* We must repeat translateX(-50%) to keep it centered, then add the scale */
-				transform: translateX(-50%) scale(0.7);
-
-				/* Anchors the scaling to the bottom so it doesn't float upwards */
-				transform-origin: bottom center;
-
-				/* Optional: since it's smaller, you might want it slightly closer to the edge */
-				bottom: 10px;
-			}
-		}
-
 		.overlay {
 			display: none;
 			position: fixed;
@@ -227,4 +220,18 @@
 			top: 2%;
 			left: 2%;
 			z-index: 3;
+		}
+
+		/* Mobile adjustments */
+		@media (max-width: 915px) {
+			.status-bar {
+				/* We must repeat translateX(-50%) to keep it centered, then add the scale */
+				transform: translateX(-50%) scale(0.7);
+
+				/* Anchors the scaling to the bottom so it doesn't float upwards */
+				transform-origin: bottom center;
+
+				/* Optional: since it's smaller, you might want it slightly closer to the edge */
+				bottom: 10px;
+			}
 		}

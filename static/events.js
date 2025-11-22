@@ -3,6 +3,8 @@ export const DrawingEventType = Object.freeze({
     DRAW: 1,
     END: 2,
     ADD_ZONE: 3,
+    USER_CONNECTED: 4,
+    USER_DISCONNECTED: 5
 });
 
 class Writer {
@@ -33,39 +35,26 @@ class Reader {
 export class Event {
     constructor() {
         this.type = 0; //1
-        this.timestamp = Date.now() % 86400000; //4
+        // this.timestamp = Date.now() % 86400000; //4
         this.clientId = 0; //1
         this.x = 0; //2
         this.y = 0; //2
         this.w = 0,  //2
         this.h = 0; //2
-        this.color = {r: 255, g: 255, b: 255};
+        // namelength, 1
+        this.name = ""; //max 255 characters
+        this.color = {r: 255, g: 255, b: 255}; //1, 1, and 1
         this.strokeRadius = 30; //1
     }
     
     serialize() {
-     	let size;
-     	switch(this.type) {
-     		case DrawingEventType.START :
-     			size = 14;
-     			break;
-     		case DrawingEventType.DRAW :
-     			size = 15;
-     			break;
-     		case DrawingEventType.END :
-     			size = 10;
-     			break;
-     		case DrawingEventType.ADD_ZONE :
-     			size = 18;
-     			break;
-     	}
     	
-    	const buffer = new ArrayBuffer(100, { maxByteLength: 100 });
+    	const buffer = new ArrayBuffer(1024, { maxByteLength: 1024 });
     	const view = new DataView(buffer);
     	const w = new Writer(view);
 		
 		w.write("setUint8", this.type, 1); //commun à tous
-		w.write("setUint32", this.timestamp, 4); //commun à tous
+		// w.write("setUint32", this.timestamp, 4); //commun à tous
     	w.write("setUint8", this.clientId, 1); //commun à tous
 		
 		switch(this.type) {
@@ -75,11 +64,11 @@ export class Event {
 				w.write("setUint8", this.color["r"], 1);
 				w.write("setUint8", this.color["g"], 1);
 				w.write("setUint8", this.color["b"], 1);
+				w.write("setUint8" , this.strokeRadius, 1);
     			break;
     		case DrawingEventType.DRAW :
     			w.write("setUint16", this.x, 2);
-    			w.write("setUint16", this.y, 2);
-    			w.write("setUint8" , this.strokeRadius, 1);
+    			w.write("setUint16", this.y, 2);	
     			break;
     		case DrawingEventType.END :
     			break;
@@ -90,6 +79,11 @@ export class Event {
     			w.write("setUint16", this.y, 2);
     			w.write("setUint16", this.w, 2);
     			w.write("setUint16", this.h, 2);
+    			w.write("setUint8", this.name.length, 1);
+    			console.log(this.name.length)
+    			for (let i = 0; i < this.name.length; i++) {
+  					w.write("setUint8", this.name.charAt(i).charCodeAt(0), 1);
+				}
     			break;
     	}
     	
@@ -108,7 +102,7 @@ export class Event {
     	const r = new Reader(view, offset);
  
  		received_event.type = r.read("getUint8", 1);
- 		received_event.timestamp = r.read("getUint32", 4);
+ 		// received_event.timestamp = r.read("getUint32", 4);
     	received_event.clientId = r.read("getUint8", 1);
     		 
     	switch(received_event.type) {
@@ -118,11 +112,11 @@ export class Event {
     			received_event.color["r"] = r.read("getUint8", 1);
 				received_event.color["g"] = r.read("getUint8", 1);
 				received_event.color["b"] = r.read("getUint8", 1);
+				received_event.strokeRadius = r.read("getUint8", 1);
     			break;
     		case DrawingEventType.DRAW :
     			received_event.x = r.read("getUint16", 2);
     			received_event.y = r.read("getUint16", 2);
-    			received_event.strokeRadius = r.read("getUint8", 1);
     			break;
     		case DrawingEventType.END :
     			break;
@@ -134,6 +128,11 @@ export class Event {
     			received_event.y = r.read("getUint16", 2);
     			received_event.w = r.read("getUint16", 2);
     			received_event.h = r.read("getUint16", 2);
+    			const name_length = r.read("getUint8", 1);
+    			received_event.name = "";
+    			for (let i = 0; i < name_length; i++) {
+  					received_event.name += String.fromCharCode(r.read("getUint8", 1));
+				}
     			break;
     	}
     	
@@ -162,12 +161,13 @@ export class Event {
 
 export const test_event_serialization = () => {
 	const jaaj = new Event();
-	jaaj.type = DrawingEventType.DRAW;
+	jaaj.type = DrawingEventType.ADD_ZONE;
 	jaaj.clientId = 69;
 	jaaj.x = 150;
 	jaaj.y = 150;
 	jaaj.w = 50;
 	jaaj.h = 60;
+	jaaj.name = "bite"
 	jaaj.strokeRadius = 1;
 	
 	const soos = jaaj.serialize();
@@ -175,7 +175,7 @@ export const test_event_serialization = () => {
 	
 	const leel = Event.deserialize(soos);
 	console.log(leel["event"].type);
-	console.log(leel["event"].timestamp);
+	// console.log(leel["event"].timestamp);
 	console.log(leel["event"].clientId);
 	console.log(leel["event"].x);
 	console.log(leel["event"].y);
@@ -185,12 +185,13 @@ export const test_event_serialization = () => {
 	console.log(leel["event"].color["b"]);
 	console.log(leel["event"].color["g"]);
 	console.log(leel["event"].strokeRadius);
+	console.log(leel["event"].name);
 }
 
 export const test_event_serialization_big = () => {
 	const jaaj = new Event();
 	jaaj.type = DrawingEventType.DRAW;
-	jaaj.timestamp = 1763766859065;
+	// jaaj.timestamp = 1763766859065;
 	jaaj.clientId = 69;
 	jaaj.x = 150;
 	jaaj.y = 150;
@@ -200,7 +201,7 @@ export const test_event_serialization_big = () => {
 	
 	const soos = new Event();
 	soos.type = DrawingEventType.START;
-	soos.timestamp = 1763766859069;
+	// soos.timestamp = 1763766859069;
 	soos.clientId = 69;
 	soos.x = 150;
 	soos.y = 150;
@@ -210,7 +211,7 @@ export const test_event_serialization_big = () => {
 	
 	const leel = new Event();
 	leel.type = DrawingEventType.ADD_ZONE;
-	leel.timestamp = 1763766859420;
+	// leel.timestamp = 1763766859420;
 	leel.clientId = 69;
 	leel.x = 150;
 	leel.y = 150;
