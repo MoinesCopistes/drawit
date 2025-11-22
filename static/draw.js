@@ -22,7 +22,7 @@ const modeBtn = document.getElementById('modeSwitch');
 const statusBar = document.getElementById('statusBar');
 const container = document.getElementById('canvas-container');
 const viewport = document.getElementById('viewport');
-const canvas = document.getElementById('DrawingCanva');
+const canvas = document.getElementById('Canva');
 const ctx = canvas.getContext('2d');
 modeBtn.addEventListener('click', toggleMode);
 
@@ -223,6 +223,9 @@ export class DrawingModule {
 
         // handle mouse events
         const findxy = (res, e) => {
+            if (state.mode != "drawing") {
+                return
+            }
             const rect = canvas.getBoundingClientRect();
             // 1. Calculate the ratio between screen pixels and canvas pixels
             const scaleX = canvas.width / rect.width;
