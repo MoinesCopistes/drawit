@@ -20,7 +20,10 @@ const state = {
     minScale: 0.5,
     maxScale: 3,
     canvasWidth: 2000,
-    canvasHeight: 2000
+    canvasHeight: 2000,
+    start_requests: 0,
+    start_timer: 0,
+    total_requests_sent: 0
 };
 
 // --- Elements ---
@@ -32,7 +35,6 @@ const viewport = document.getElementById('viewport');
 const canvas = document.getElementById('Canva');
 const ctx = canvas.getContext('2d');
 modeBtn.addEventListener('click', toggleMode);
-
 // --- Mode Logic ---
 function toggleMode() {
     if (state.mode === 'drawing') {
@@ -165,24 +167,24 @@ export class DrawingModule {
         this.canvas = document.getElementById(canvaId)
         console.log(canvaId, this.canvas)
         this.ctx = this.canvas.getContext("2d")
-        this.client_id = Math.random().toString(36).substring(2, 15);
-
+        this.client_id = Math.floor(Math.random() * 255); // client id between 0 and 255 will be later assigned by server
+        // console.log("DrawingModule created with client_id:", this.client_id);
     }
     HandleEvent(event) {
- 
-         if (event.type === DrawingEventType.START) {
-             //reset PreviousPointsDict for this clientId
-             this.PreviousPointsDict[event.clientId] = [];
+        // console.log(event);
+        if (event.type === DrawingEventType.START) {
+            //reset PreviousPointsDict for this clientId
+            this.PreviousPointsDict[event.clientId] = [];
             this.drawEventsOnCanva(event);
-         }
-         else if (event.type === DrawingEventType.END) {
-             //clear PreviousPointsDict for this clientId
-             delete this.PreviousPointsDict[event.clientId];
-         }
-         else if (event.type === DrawingEventType.DRAW) {
+        }
+        else if (event.type === DrawingEventType.END) {
+            //clear PreviousPointsDict for this clientId
+            delete this.PreviousPointsDict[event.clientId];
+        }
+        else if (event.type === DrawingEventType.DRAW) {
             this.drawEventsOnCanva(event);
-         }
- 
+        }
+
     }
 
     drawEventsOnCanva(event) {
@@ -251,6 +253,7 @@ export class DrawingModule {
                 ev.y = currY;
                 ev.clientId = this.client_id;
                 send_data(ev.serialize())
+                state.total_requests_sent += 1;
                 //self.HandleEvent(canvaId, ev);
 
 
@@ -265,7 +268,8 @@ export class DrawingModule {
                 ev.y = currY;
                 ev.clientId = this.client_id;
                 send_data(ev.serialize())
-                
+                state.total_requests_sent += 1;
+
                 //self.HandleEvent(canvaId, ev);
             }
 
@@ -281,6 +285,7 @@ export class DrawingModule {
                     ev.y = currY;
                     ev.clientId = this.client_id;
                     send_data(ev.serialize())
+                    state.total_requests_sent += 1;
 
                     //self.HandleEvent(canvaId, ev);
                 }
@@ -301,7 +306,31 @@ export class DrawingModule {
             findxy('out', e);
         });
     }
+
+
+    
+
+    //helper functions to help count the number of requests sent by DrawingModule
+    start_timer() {
+        console.log("Timer started");
+        state.start_timer = performance.now() ;
+        state.start_requests = state.total_requests_sent;
+        // console.log("Start requests:", state.start_requests);
+        return performance.now() ;
+    }
+    end_timer() {
+        const end_time = performance.now();
+        // console.log("beginning of timer was " + state.start_timer/1000)
+        // console.log("end time is " + end_time/1000)
+        const duration = (end_time - state.start_timer) / 1000;
+        const requests_sent = state.total_requests_sent - state.start_requests;
+        console.log("Number of requests sent: " + requests_sent);
+        console.log("Timer ended. Lasted for " + duration + "seconds.");
+        console.log("Requests per second sent " + (requests_sent / duration));
+    }
+
+
+
+
+
 }
-
-
-
