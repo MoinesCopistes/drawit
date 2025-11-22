@@ -135,6 +135,10 @@ input[type="text"]:focus {
   background-color: white;
 }
 
+.hidden-div {
+  display: none;
+}
+
 @media (max-width: 400px) {
   .input-group {
     flex-direction: column;

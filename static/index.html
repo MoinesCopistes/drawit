@@ -31,7 +31,9 @@
 		</div>
 	</div>
 
-	<script type="module">	
+	<script type="module">
+		import {dumpBytes} from "./eventdump.js"
+		console.log(dumpBytes);
 		function handleJoin(event) {
 			event.preventDefault();
 			const code = document.getElementById('roomCode').value;
