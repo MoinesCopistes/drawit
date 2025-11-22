@@ -8,6 +8,37 @@
 <body>
 This is were you make the image composition.
 
-Clients can join to draw <a href="/draw">here.</a>	
+</br>
+ <canvas id="PlanCanva" width="2000" height="1000" style="border:1px solid black;">
+</canvas>
+
+<script type="module">
+
+import { DrawingModule } from '/static/draw.js';
+import {DrawingEvent, DrawingEventType} from '/static/events.js';
+const drawingModuleInstance = new DrawingModule();
+
+const start_event = new DrawingEvent({
+	type: DrawingEventType.START,
+	x: 100,
+	y: 100
+});
+drawingModuleInstance.HandleEvent("PlanCanva", start_event);
+
+const draw_event = new DrawingEvent({
+	type: DrawingEventType.DRAW,
+	x: 200,
+	y: 200
+});
+drawingModuleInstance.HandleEvent("PlanCanva", draw_event);
+const end_event = new DrawingEvent({
+	type: DrawingEventType.END,
+	x: 200,
+	y: 200
+});
+drawingModuleInstance.HandleEvent("PlanCanva", end_event);
+
+</script>
+Clients can join to draw <a href="/draw">here.</a>
 </body>
 </html>

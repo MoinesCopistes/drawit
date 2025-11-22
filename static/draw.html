@@ -6,6 +6,16 @@
 	<title>Document</title>
 </head>
 <body>
+</br>
+</br>
+ <canvas id="DrawingCanva" width="2000" height="1000" style="border:1px solid black;">
+</canvas>
+<script type="module">
+import { DrawingModule } from '/static/draw.js';
+
+const drawingModuleInstance = new DrawingModule();
+drawingModuleInstance.init("DrawingCanva");
+</script>
 This is the drawing page !!!	
 </body>
 </html>
