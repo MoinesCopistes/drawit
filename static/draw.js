@@ -173,7 +173,7 @@ export class DrawingModule {
                 ev.x = currX;
                 ev.y = currY;
                 ev.color = this.currentColor;
-                console.log("current color in draw.js:", this.currentColor);
+                //console.log("current color in draw.js:", this.currentColor);
                 ev.strokeRadius = document.getElementById('radiusSlider').value;
                 ev.clientId = this.client_id;
                 send_data(ev.serialize())
