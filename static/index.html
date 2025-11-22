@@ -31,7 +31,10 @@
 		</div>
 	</div>
 
-	<script>
+	<script type="module">
+		import {test_event_serialization} from "/static/events.js"
+		test_event_serialization();
+	
 		function handleJoin(event) {
 			event.preventDefault();
 			const code = document.getElementById('roomCode').value;

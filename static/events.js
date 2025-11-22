@@ -39,39 +39,27 @@ export class Event {
         this.y = 0; //2
         this.w = 0,  //2
         this.h = 0; //2
+        this.color = {r: 255, g: 255, b: 255};
         this.strokeId = 0; //1
     }
     
     serialize() {
-    	let size;
-    	switch(this.type) {
-    		case DrawingEventType.START :
-    			size = 14;
-    			break;
-    		case DrawingEventType.DRAW :
-    			size = 15;
-    			break;
-    		case DrawingEventType.END :
-    			size = 10;
-    			break;
-    		case DrawingEventType.ADD_ZONE :
-    			size = 18;
-    			break;
-    	}
     	
-    	const buffer = new ArrayBuffer(size);
+    	const buffer = new ArrayBuffer(100, { maxByteLength: 100 });
     	const view = new DataView(buffer);
     	const w = new Writer(view);
 		
 		w.write("setUint8", this.type, 1); //commun à tous
-		w.write("setFloat64", this.timestamp, 8);
-    	w.write("setUint8", this.clientId, 1);
+		w.write("setFloat64", this.timestamp, 8); //commun à tous
+    	w.write("setUint8", this.clientId, 1); //commun à tous
 		
 		switch(this.type) {
     		case DrawingEventType.START :
     			w.write("setUint16", this.x, 2);
     			w.write("setUint16", this.y, 2);
-
+				w.write("setUint8", this.color["r"], 1);
+				w.write("setUint8", this.color["g"], 1);
+				w.write("setUint8", this.color["b"], 1);
     			break;
     		case DrawingEventType.DRAW :
     			w.write("setUint16", this.x, 2);
@@ -87,6 +75,8 @@ export class Event {
     			w.write("setUint16", this.h, 2);
     			break;
     	}
+    	
+    	buffer.resize(w.offset);
 
     	return buffer;
     }
@@ -105,7 +95,9 @@ export class Event {
     		case DrawingEventType.START :
     			received_event.x = r.read("getUint16", 2);
     			received_event.y = r.read("getUint16", 2);
-
+    			received_event.color["r"] = r.read("getUint8", 1);
+				received_event.color["g"] = r.read("getUint8", 1);
+				received_event.color["b"] = r.read("getUint8", 1);
     			break;
     		case DrawingEventType.DRAW :
     			received_event.x = r.read("getUint16", 2);
@@ -130,7 +122,7 @@ export class Event {
 
 export const test_event_serialization = () => {
 	const jaaj = new Event();
-	jaaj.type = DrawingEventType.ADD_ZONE;
+	jaaj.type = DrawingEventType.DRAW;
 	jaaj.timestamp = 1763766859065;
 	jaaj.clientId = 69;
 	jaaj.x = 150;
@@ -140,6 +132,7 @@ export const test_event_serialization = () => {
 	jaaj.strokeId = 1;
 	
 	const soos = jaaj.serialize();
+	console.log(soos.byteLength);
 	
 	const leel = Event.deserialize(soos);
 	console.log(leel.type);
@@ -149,11 +142,13 @@ export const test_event_serialization = () => {
 	console.log(leel.y);
 	console.log(leel.w);
 	console.log(leel.h);
+	console.log(leel.color["r"]);
+	console.log(leel.color["b"]);
+	console.log(leel.color["g"]);
 	console.log(leel.strokeId);
 	
 
 }
 
 // TODO: Find some nice way to serialize this into binary
-
 
