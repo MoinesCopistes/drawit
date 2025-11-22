@@ -47,7 +47,7 @@ export class Event {
     
     serialize() {
     	
-    	const buffer = new ArrayBuffer(100, { maxByteLength: 100 });
+    	const buffer = new ArrayBuffer(1024, { maxByteLength: 1024 });
     	const view = new DataView(buffer);
     	const w = new Writer(view);
 		

@@ -34,11 +34,13 @@ export class Map {
       this.drawing = false;
       let ev = new Event();
       ev.type = DrawingEventType.ADD_ZONE;
+      let name = prompt("name: ")
       const box = this.getBoundingBox(this.startPoint, this.endPoint);
       ev.x = box.x;
       ev.y = box.y;
       ev.w = box.w;
       ev.h = box.h;
+      ev.name = name;
       await window.socket.send(ev.serialize())
       // this.addZone(this.getBoundingBox(this.startPoint, this.endPoint));
       // this.redraw();
@@ -58,13 +60,13 @@ export class Map {
     return { x, y, w, h };
   }
 
-  drawRect({ x, y, w, h }) {
+  drawRect({ x, y, w, h, name }) {
     this.ctx.beginPath();
     this.ctx.rect(x, y, w, h);
     this.ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
     this.ctx.fill();
     this.ctx.fillStyle = "black";
-    this.ctx.fillText("soleil", x+w/2, y+h/2)
+    this.ctx.fillText(name || "", x+w/2, y+h/2)
     this.ctx.stroke();
   }
 
