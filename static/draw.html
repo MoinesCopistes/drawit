@@ -43,7 +43,9 @@
 	  });
 
 		const drawingModuleInstance = new DrawingModule("Canva");
-		drawingModuleInstance.listen(sendMessage);
+		if (window.location.pathname == "/draw") {
+			drawingModuleInstance.listen(sendMessage);
+		}
 	</script>
 
 </body>

@@ -9,7 +9,7 @@ app = Sanic("MyHelloWorldApp")
 
 app.static("/static/", "./static/", directory_view=True, name="static")
 app.static("/", "./static/index.html", name="index")
-app.static("/plan", "./static/plan.html", name="plan")
+app.static("/plan", "./static/draw.html", name="plan")
 app.static("/draw", "./static/draw.html", name="draw")
 
 connections = []
