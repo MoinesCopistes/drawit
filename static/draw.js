@@ -18,6 +18,8 @@ if (isDraw) {
     window.mode = 'view';
     document.body.classList.add(`mode-${window.mode}`)
 } else {
+    document.getElementById("modeSwitch").style.display = "none"
+    document.getElementById("toolstop").style.display = "none"
     window.mode = 'drawing';
     document.body.classList.add(`mode-${window.mode}`)
     instance.pause();
@@ -100,9 +102,7 @@ export class DrawingModule {
 
         this.ctx.beginPath();
         //safety check for stroke radius (dont want it to go TOO bad would we ?)
-        console.log("Stroke radius is :", this.strokeRadiuses[user_id]);
         const radius = Math.pow(15, Math.min(15, Number(this.strokeRadiuses[user_id]))/15);
-        console.log("Calculated radius is :", radius);
         this.ctx.arc(event.x, event.y, radius, 0, 2 * Math.PI, false);
         this.ctx.fillStyle = `rgb(${this.drawingcolors[user_id].r}, ${this.drawingcolors[user_id].g}, ${this.drawingcolors[user_id].b})`;
         this.ctx.fill();

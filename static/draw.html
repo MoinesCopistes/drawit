@@ -7,35 +7,41 @@
 	<title>DrawIt Canvas</title>
 	<link rel="stylesheet" href="/static/draw.css">
 	<script src="/static/external/qrcode.min.js"></script>
-  <script src='/static/external/panzoom.min.js'></script>
+  <script src="/static/external/panzoom.min.js"></script>
 </head>
 
 
 <body>
 
 	<div class="ui-layer">
-
-		<div id="colorMenuBtn" class="colorbtn"></div>
 		<div id="colorOverlay" class="overlay">
 			<div id="colorGrid" class="color-grid"></div>
 		</div>
 
-		<div id="radiusTools" class="ui-element" title="Choose pen radius">
-			<input type="range" id="radiusSlider" min="1" max="15" value="8">
-			<span id="radiusValue">8</span>
+		<div class="top" id="toolstop">
+			<div class="toolbar">
+				<div id="colorMenuBtn" class="colorbtn"></div>
+
+				<div id="radiusTools" title="Choose pen radius">
+					<input type="range" id="radiusSlider" min="1" max="15" value="8">
+					<span id="radiusValue">8</span>
+				</div>
+
+			</div>
+
 		</div>
 
-		<div id="usersCount" class="ui-element" title="Users connected">
+		<div id="usersCount" title="Users connected">
 			<p id="count">5</p>
 		</div>
 
-		<div id="modeSwitch" class="ui-element" title="Toggle Mode">
+		<div id="modeSwitch" title="Toggle Mode" class="button">
 			<img class="show-in-drawing" src="/static/Icons/Move%20icon.svg" alt="Switch to View">
 
 			<img class="show-in-view" src="/static/Icons/Draw%20icon.svg" alt="Switch to Draw">
 		</div>
 		
-		<div id="qrcode" class="ui-element"></div>
+		<div id="qrcode"></div>
 	</div>
 
 
@@ -74,7 +80,6 @@
 		//colors of the palette !
 		let selectedColor = drawingModuleInstance.palette[0];//base color
 		colorMenuBtn.style.backgroundColor = selectedColor; //set the initial color of the background button
-		colorMenuBtn.style.border = "1px solid #000000";
 		colorOverlay.style.display = 'none';
 		// Create color swatches
 		drawingModuleInstance.palette.forEach(hex => {
