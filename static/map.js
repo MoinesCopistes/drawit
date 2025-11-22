@@ -53,6 +53,14 @@ export class Map {
       if (window.mode != "drawing") return;
       if (!this.drawing) return;
       this.drawing = false;
+
+      const box = this.getBoundingBox(this.startPoint, this.endPoint);
+
+      if (box.w <= 100 || box.h <= 100) {
+        this.redraw();
+        return;
+      } 
+
       let ev = new Event();
       ev.type = DrawingEventType.ADD_ZONE;
       let name = prompt("name: ")
@@ -60,7 +68,6 @@ export class Map {
         this.redraw();
         return;
       };
-      const box = this.getBoundingBox(this.startPoint, this.endPoint);
       ev.x = box.x;
       ev.y = box.y;
       ev.w = box.w;
