@@ -39,6 +39,8 @@ export class Event {
         this.y = 0; //2
         this.w = 0,  //2
         this.h = 0; //2
+        // namelength, 1
+        this.name = ""; //max 255 characters
         this.color = {r: 255, g: 255, b: 255}; //1, 1, and 1
         this.strokeRadius = 30; //1
     }
@@ -75,6 +77,11 @@ export class Event {
     			w.write("setUint16", this.y, 2);
     			w.write("setUint16", this.w, 2);
     			w.write("setUint16", this.h, 2);
+    			w.write("setUint8", this.name.length, 1);
+    			console.log(this.name.length)
+    			for (let i = 0; i < this.name.length; i++) {
+  					w.write("setUint8", this.name.charAt(i).charCodeAt(0), 1);
+				}
     			break;
     	}
     	
@@ -119,6 +126,11 @@ export class Event {
     			received_event.y = r.read("getUint16", 2);
     			received_event.w = r.read("getUint16", 2);
     			received_event.h = r.read("getUint16", 2);
+    			const name_length = r.read("getUint8", 1);
+    			received_event.name = "";
+    			for (let i = 0; i < name_length; i++) {
+  					received_event.name += String.fromCharCode(r.read("getUint8", 1));
+				}
     			break;
     	}
     	
@@ -147,12 +159,13 @@ export class Event {
 
 export const test_event_serialization = () => {
 	const jaaj = new Event();
-	jaaj.type = DrawingEventType.DRAW;
+	jaaj.type = DrawingEventType.ADD_ZONE;
 	jaaj.clientId = 69;
 	jaaj.x = 150;
 	jaaj.y = 150;
 	jaaj.w = 50;
 	jaaj.h = 60;
+	jaaj.name = "bite"
 	jaaj.strokeRadius = 1;
 	
 	const soos = jaaj.serialize();
@@ -170,6 +183,7 @@ export const test_event_serialization = () => {
 	console.log(leel["event"].color["b"]);
 	console.log(leel["event"].color["g"]);
 	console.log(leel["event"].strokeRadius);
+	console.log(leel["event"].name);
 }
 
 export const test_event_serialization_big = () => {
