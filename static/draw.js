@@ -223,6 +223,9 @@ export class DrawingModule {
 
         // handle mouse events
         const findxy = (res, e) => {
+            if (state.mode != "drawing") {
+                return
+            }
             const rect = canvas.getBoundingClientRect();
             // 1. Calculate the ratio between screen pixels and canvas pixels
             const scaleX = canvas.width / rect.width;
