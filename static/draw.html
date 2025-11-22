@@ -6,6 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<title>DrawIt Canvas</title>
 	<link rel="stylesheet" href="/static/draw.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 
 
@@ -30,6 +31,8 @@
 
 			<img class="show-in-view" src="/static/Icons/Draw%20icon.svg" alt="Switch to Draw">
 		</div>
+		
+		<div id="qrcode" class="ui-element"></div>
 	</div>
 
 
@@ -40,8 +43,13 @@
 		</div>
 	</div>
 
-
-	<script type="module" src="/static/draw.js"></script>
+	
+	<script>
+		if(window.location.pathname == "/plan") {
+        	let qrcode = new QRCode("qrcode",window.location.origin  + "/draw");
+        }
+    </script>
+	
 	<script type="module">
 		import { setupWebsocket } from "/static/websockets.js";
 		import { DrawingModule } from '/static/draw.js';
