@@ -71,11 +71,7 @@ async def save(request):
         f.write(injection_block)
 
 
-<<<<<<< HEAD
     return text("done")
-=======
-    return response.text("done")
->>>>>>> 9d957f6 (conflict)
 
 @app.route("/eventdump.js")
 async def serve_file_from_disk(request):
