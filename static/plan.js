@@ -66,6 +66,8 @@ function getCanvasCoordinates(clientX, clientY) {
 
 // --- Event Listeners ---
 
+modeBtn.addEventListener('click', toggleMode);
+
 viewport.addEventListener('mousedown', (e) => {
     const coords = getCanvasCoordinates(e.clientX, e.clientY);
 
@@ -166,7 +168,6 @@ viewport.addEventListener('wheel', (e) => {
 }, {
     passive: false
 });
-
 function clampPosition(x, y, scale) {
     const viewportW = viewport.clientWidth;
     const viewportH = viewport.clientHeight;
