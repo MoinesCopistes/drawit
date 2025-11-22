@@ -25,7 +25,7 @@
 
 	<div id="viewport">
 		<div id="canvas-container">
-			<canvas id="DrawingCanva" width="2000" height="2000"></canvas>
+			<canvas id="Canva" width="2000" height="2000"></canvas>
 		</div>
 	</div>
 
@@ -42,7 +42,7 @@
 			drawingModuleInstance.HandleEvent(event);
 		});
 
-		const drawingModuleInstance = new DrawingModule("DrawingCanva");
+		const drawingModuleInstance = new DrawingModule("Canva");
 		drawingModuleInstance.listen(sendMessage);
 
 	</script>
