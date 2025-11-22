@@ -21,4 +21,7 @@ class EventBuffer:
                     return [b for e in events for b in e]
                 self.new_event.clear()  # only clear before waiting
             await self.new_event.wait()
+    async def clear(self):
+        async with self.lock:
+            self.buffer.clear()
 
