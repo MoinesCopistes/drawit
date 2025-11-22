@@ -59,6 +59,13 @@
 			opacity: 1;
 		}
 
+		#usersCount {
+			top: 130px;
+			left: 20px;
+			opacity: 1;
+			
+		}
+
 		/* Hide color picker when not in drawing mode */
 		body.mode-view #colorTools {
 			opacity: 0;

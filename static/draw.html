@@ -19,6 +19,9 @@
 		<div id="radiusTools" class="ui-element" title="Choose pen radius">
 			<input type="number" id="radiusPicker" min="1" max="40" value="1">
 		</div>
+		<div id="usersCount" class="ui-element" title="Users connected">
+			<p id="count">5</p>
+		</div>
 
 		<div id="modeSwitch" class="ui-element" title="Toggle Mode">
 			<img class="show-in-drawing" src="/static/Icons/Move%20icon.svg" alt="Switch to View">
@@ -53,10 +56,20 @@
 			}		
 		}
 
+		let count = 0;
+		const countElem = document.getElementById("count")
 		const sendMessage = await setupWebsocket(async (d) => {
 		  const events = Event.deserialize_list(await d.arrayBuffer());
 			for (let event of events) {
 				await sleep(1)
+				if (event.type == DrawingEventType.USER_CONNECTED) {
+					count+=1;
+					countElem.innerHTML = count;
+				}
+				if (event.type == DrawingEventType.USER_DISCONNECTED) {
+					count-=1;
+					countElem.innerHTML = count;
+				}
 				if (event.type == DrawingEventType.ADD_ZONE) {
 					map.zones.push(event);
 					map.redraw();

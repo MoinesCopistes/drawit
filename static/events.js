@@ -3,6 +3,8 @@ export const DrawingEventType = Object.freeze({
     DRAW: 1,
     END: 2,
     ADD_ZONE: 3,
+    USER_CONNECTED: 4,
+    USER_DISCONNECTED: 5
 });
 
 class Writer {
@@ -33,7 +35,7 @@ class Reader {
 export class Event {
     constructor() {
         this.type = 0; //1
-        this.timestamp = Date.now() % 86400000; //4
+        // this.timestamp = Date.now() % 86400000; //4
         this.clientId = 0; //1
         this.x = 0; //2
         this.y = 0; //2
@@ -52,7 +54,7 @@ export class Event {
     	const w = new Writer(view);
 		
 		w.write("setUint8", this.type, 1); //commun à tous
-		w.write("setUint32", this.timestamp, 4); //commun à tous
+		// w.write("setUint32", this.timestamp, 4); //commun à tous
     	w.write("setUint8", this.clientId, 1); //commun à tous
 		
 		switch(this.type) {
@@ -100,7 +102,7 @@ export class Event {
     	const r = new Reader(view, offset);
  
  		received_event.type = r.read("getUint8", 1);
- 		received_event.timestamp = r.read("getUint32", 4);
+ 		// received_event.timestamp = r.read("getUint32", 4);
     	received_event.clientId = r.read("getUint8", 1);
     		 
     	switch(received_event.type) {
@@ -173,7 +175,7 @@ export const test_event_serialization = () => {
 	
 	const leel = Event.deserialize(soos);
 	console.log(leel["event"].type);
-	console.log(leel["event"].timestamp);
+	// console.log(leel["event"].timestamp);
 	console.log(leel["event"].clientId);
 	console.log(leel["event"].x);
 	console.log(leel["event"].y);
@@ -189,7 +191,7 @@ export const test_event_serialization = () => {
 export const test_event_serialization_big = () => {
 	const jaaj = new Event();
 	jaaj.type = DrawingEventType.DRAW;
-	jaaj.timestamp = 1763766859065;
+	// jaaj.timestamp = 1763766859065;
 	jaaj.clientId = 69;
 	jaaj.x = 150;
 	jaaj.y = 150;
@@ -199,7 +201,7 @@ export const test_event_serialization_big = () => {
 	
 	const soos = new Event();
 	soos.type = DrawingEventType.START;
-	soos.timestamp = 1763766859069;
+	// soos.timestamp = 1763766859069;
 	soos.clientId = 69;
 	soos.x = 150;
 	soos.y = 150;
@@ -209,7 +211,7 @@ export const test_event_serialization_big = () => {
 	
 	const leel = new Event();
 	leel.type = DrawingEventType.ADD_ZONE;
-	leel.timestamp = 1763766859420;
+	// leel.timestamp = 1763766859420;
 	leel.clientId = 69;
 	leel.x = 150;
 	leel.y = 150;
