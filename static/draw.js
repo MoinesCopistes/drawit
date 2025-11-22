@@ -17,10 +17,12 @@ export function allotherthings() {
     const radiusSlider = document.getElementById('radiusSlider');
     const radiusValue = document.getElementById('radiusValue');
     const tools = document.getElementById('toolstop');
+    const count = document.getElementById('usersCount');
 
 
     if (isDraw) {
 
+        count.style.display = "none";
         window.mode = 'view';
         document.body.classList.add(`mode-${window.mode}`)
     } else {
