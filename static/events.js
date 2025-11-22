@@ -77,8 +77,11 @@ export class Event {
     	}
     	
     	buffer.resize(w.offset);
+    	
+    	const buffer2 = new ArrayBuffer(buffer.byteLength);
+    	new Uint8Array(buffer2).set(new Uint8Array(buffer));
 
-    	return buffer;
+    	return buffer2;
     }
     
     static deserialize(array_buffer) {
