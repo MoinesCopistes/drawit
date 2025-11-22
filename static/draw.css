@@ -64,12 +64,11 @@
 			top: 130px;
 			left: 20px;
 			opacity: 1;
-
 		}
 		
 		#qrcode {
-			top : 20px;
-			left : 1780px;
+			top : 5px;
+			left : 20px;
 		}
 		
 		#qrcode img {		

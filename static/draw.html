@@ -50,6 +50,15 @@
 	<script>
 		if(window.location.pathname == "/plan") {
         	let qrcode = new QRCode("qrcode",window.location.origin  + "/draw");
+        	const color = document.getElementById("colorMenuBtn");
+            color.style.display = "none";
+            const rad = document.getElementById("radiusTools");
+            rad.style.display = "none";
+            const usr = document.getElementById("usersCount");
+            usr.style.top = 20;
+        } else {
+        	const qr = document.getElementById("qrcode");
+            qr.style.display = "none";            
         }
     </script>
 	
