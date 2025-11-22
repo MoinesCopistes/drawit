@@ -7,10 +7,12 @@
 	<title>DrawIt Canvas</title>
 	<link rel="stylesheet" href="/static/draw.css">
 	<script src="/static/external/qrcode.min.js"></script>
-  <script src="/static/external/panzoom.min.js"></script>
+	<script src="/static/external/panzoom.min.js"></script>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+	<link
+		href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+		rel="stylesheet">
 </head>
 
 
@@ -40,12 +42,13 @@
 
 			<img class="show-in-view" src="/static/Icons/Draw%20icon.svg" alt="Switch to Draw">
 		</div>
-		
-			<div id="usersCount" title="Users connected">
-				<p id="count">5</p>
-				<img class="show-in-drawing" width="20px" style="filter: invert(1);margin-left: 5px;" src="/static/Icons/people.svg" alt="Switch to View">
 
-			</div>
+		<div id="usersCount" title="Users connected">
+			<p id="count">5</p>
+			<img class="show-in-drawing" height="20px" style="margin-left: 5px;" src="/static/Icons/people.svg"
+				alt="Switch to View">
+
+		</div>
 
 
 	</div>
@@ -54,31 +57,31 @@
 	<div id="viewport">
 		<div id="canvas-container" style="width:3840px; height:2160px">
 			<canvas id="back" width="3840" height="2160"></canvas>
-			<canvas id="top"  width="3840" height="2160"></canvas>
+			<canvas id="top" width="3840" height="2160"></canvas>
 		</div>
 	</div>
 
-	
+
 	<script>
-		if(window.location.pathname == "/plan") {
-        	let qrcode = new QRCode("qrcode",window.location.origin  + "/draw");
-        	const color = document.getElementById("colorMenuBtn");
-            color.style.display = "none";
-            const rad = document.getElementById("radiusTools");
-            rad.style.display = "none";
-            const usr = document.getElementById("usersCount");
-            usr.style.top = 20;
-        } else {
-        	const qr = document.getElementById("qrcode");
-            qr.style.display = "none";            
-        }
-    </script>
-	
+		if (window.location.pathname == "/plan") {
+			let qrcode = new QRCode("qrcode", window.location.origin + "/draw");
+			const color = document.getElementById("colorMenuBtn");
+			color.style.display = "none";
+			const rad = document.getElementById("radiusTools");
+			rad.style.display = "none";
+			const usr = document.getElementById("usersCount");
+			usr.style.top = 20;
+		} else {
+			const qr = document.getElementById("qrcode");
+			qr.style.display = "none";
+		}
+	</script>
+
 	<script type="module">
-		import { setupWebsocket } from "/static/websockets.js";
-		import { DrawingModule, allotherthings } from '/static/draw.js';
-		import { Event, DrawingEventType } from "/static/events.js"
-		import { Map } from "/static/map.js"
+		import {setupWebsocket} from "/static/websockets.js";
+		import {DrawingModule, allotherthings} from '/static/draw.js';
+		import {Event, DrawingEventType} from "/static/events.js"
+		import {Map} from "/static/map.js"
 		const isDraw = window.location.pathname == "/draw"
 		allotherthings()
 		const drawingModuleInstance = new DrawingModule("back");
@@ -147,7 +150,7 @@
 		}
 
 
-		
+
 
 	</script>
 
