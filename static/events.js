@@ -1,60 +1,121 @@
 export const DrawingEventType = Object.freeze({
     START: 0,
     DRAW: 1,
-    END: 2
+    END: 2,
+    ADD_ZONE: 3
 });
 
+class Writer {
+	constructor(view) {
+		this.view = view;
+		this.offset = 0;
+	}
+	
+	write(func, arg, size) {
+		this.view[func](this.offset, arg, false);
+		this.offset += size;
+	}
+}
+
+class Reader {
+	constructor(view) {
+		this.view = view;
+		this.offset = 0;
+	}
+	
+	read(func,size) {
+		let val = this.view[func](this.offset,false);
+		this.offset += size;
+		return val;
+	}
+}
+
 export class Event {
-    constructor({ type, x, y, pressure = 1.0, strokeId, timestamp = Date.now(), clientId }) {
-        this.type = type;
-        this.x = x;
-        this.y = y;
-        this.pressure = pressure;
-        this.strokeId = strokeId;
-        this.timestamp = timestamp;
-        this.clientId = clientId; 
+    constructor() {
+        this.type = 0; //1
+        this.timestamp = 0; //8
+        this.clientId = 0; //1
+        this.x = 0; //2
+        this.y = 0; //2
+        this.w = 0,  //2
+        this.h = 0; //2
+        this.strokeId = 0; //1
     }
     
     serialize() {
-    	const buffer = new ArrayBuffer(19);
-    	const view = new DataView(buffer);
-    	
-    	if (this.type === DrawingEventType.START || this.type == DrawingEventType.END) {
-    		if(this.type === DrawingEventType.START) {	
-    			view.setInt8(0, 0, false);
-    		} else {
-    			view.setInt8(0, 2, false);
-    		}
-    		view.setUint16(1, 0, false); // 2 bytes
-			view.setUint16(3, 0, false); // 2 bytes 	
-			view.setFloat32(5, 0.0, false); // 4 bytes
-			view.setUint8(9, 0, false); //1 byte
-    	} else if(this.type == DrawingEventType.DRAW) {	
-    		view.setInt8(0, 1, false);
-    		view.setUint16(1, this.x, false); // 2 bytes
-			view.setUint16(3, this.y, false); // 2 bytes 	
-			view.setFloat32(5, this.pressure, false); // 4 bytes
-			view.setUint8(9, this.strokeId, false); //1 byte
+    	let size;
+    	switch(this.type) {
+    		case DrawingEventType.START :
+    			size = 10;
+    			break;
+    		case DrawingEventType.DRAW :
+    			size = 15;
+    			break;
+    		case DrawingEventType.END :
+    			size = 10;
+    			break;
+    		case DrawingEventType.ADD_ZONE :
+    			size = 18;
+    			break;
     	}
-    		
-		view.setFloat64(10, this.timestamp, false); //8 bytes
-		view.setUint8(18, this.clientId, false); //1 byte
+    	
+    	const buffer = new ArrayBuffer(size);
+    	const view = new DataView(buffer);
+    	const w = new Writer(view);
+		
+		w.write("setUint8", this.type, 1); //commun à tous
+		w.write("setFloat64", this.timestamp, 8);
+    	w.write("setUint8", this.clientId, 1);
+		
+		switch(this.type) {
+    		case DrawingEventType.START :
+    			break;
+    		case DrawingEventType.DRAW :
+    			w.write("setUint16", this.x, 2);
+    			w.write("setUint16", this.y, 2);
+    			w.write("setUint8" , this.strokeId, 1);
+    			break;
+    		case DrawingEventType.END :
+    			break;
+    		case DrawingEventType.ADD_ZONE :
+    			w.write("setUint16", this.x, 2);
+    			w.write("setUint16", this.y, 2);
+    			w.write("setUint16", this.w, 2);
+    			w.write("setUint16", this.h, 2);
+    			break;
+    	}
 
     	return buffer;
     }
     
     static deserialize(array_buffer) {
-    	const received_event = new Event({type:DrawingEventType.DRAW, x:0, y:0, pressure:0.0, strokeId:0, timestamp:0.0, clientID:0});
+    	const received_event = new Event();
     
     	const view = new DataView(array_buffer);
+    	const r = new Reader(view);
  
- 		received_event.type = view.getUint8(0, false); 	 
-    	received_event.x = view.getUint16(1, false);
-    	received_event.y = view.getUint16(3, false);
-    	received_event.pressure = view.getFloat32(5, false);
-    	received_event.strokeId = view.getUint8(9, false);
-    	received_event.timestamp = view.getFloat64(10, false);
-    	received_event.clientId = view.getUint8(18, false);
+ 		received_event.type = r.read("getUint8", 1);
+ 		received_event.timestamp = r.read("getFloat64", 8);
+    	received_event.clientId = r.read("getUint8", 1);
+    		 
+    	switch(received_event.type) {
+    		case DrawingEventType.START :
+    			break;
+    		case DrawingEventType.DRAW :
+    			received_event.x = r.read("getUint16", 2);
+    			received_event.y = r.read("getUint16", 2);
+    			received_event.strokeId = r.read("getUint8", 1);
+    			break;
+    		case DrawingEventType.END :
+    			break;
+    		case DrawingEventType.ADD_ZONE :
+    			received_event.x = r.read("getUint16", 2);
+    			received_event.y = r.read("getUint16", 2);
+    			received_event.w = r.read("getUint16", 2);
+    			received_event.h = r.read("getUint16", 2);
+    			break;
+    	}
+    	
     	
     	return received_event;
     	
@@ -62,20 +123,28 @@ export class Event {
 }
 
 export const test_event_serialization = () => {
-	const jaaj = new Event({type:DrawingEventType.DRAW, x:150, y:150, pressure:1.0, strokeId:8, timestamp:1763766859065, clientId:2});
+	const jaaj = new Event();
+	jaaj.type = DrawingEventType.ADD_ZONE;
+	jaaj.timestamp = 1763766859065;
+	jaaj.clientId = 69;
+	jaaj.x = 150;
+	jaaj.y = 150;
+	jaaj.w = 50;
+	jaaj.h = 60;
+	jaaj.strokeId = 1;
 	
 	const soos = jaaj.serialize();
 	
-	console.log(soos);
-	
 	const leel = Event.deserialize(soos);
 	console.log(leel.type);
-	console.log(leel.x);
-	console.log(leel.y);
-	console.log(leel.pressure);
-	console.log(leel.strokeId);
 	console.log(leel.timestamp);
 	console.log(leel.clientId);
+	console.log(leel.x);
+	console.log(leel.y);
+	console.log(leel.w);
+	console.log(leel.h);
+	console.log(leel.strokeId);
+	
 
 }
 
