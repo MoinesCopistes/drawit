@@ -12,8 +12,12 @@
 <body class="mode-drawing">
 
 	<div class="ui-layer">
-		<div id="colorTools" class="ui-element" title="Choose Color">
+		<!-- <div id="colorTools" class="ui-element" title="Choose Color">
 			<input type="color" id="colorPicker" value="#000000">
+		</div> -->
+		<div id="colorMenuBtn" , class="colorbtn"></div>
+		<div id="colorOverlay" class="overlay">
+			<div id="colorGrid" class="color-grid"></div>
 		</div>
 
 		<div id="modeSwitch" class="ui-element" title="Toggle Mode">
@@ -34,28 +38,50 @@
 
 	<script type="module" src="/static/draw.js"></script>
 	<script type="module">
-		import {setupWebsocket} from "/static/websockets.js";
-		import {DrawingModule} from '/static/draw.js';
-  	import {Event, DrawingEventType} from "/static/events.js"
-		import {Map} from "/static/map.js"
-		const isDraw = window.location.pathname  == "/draw"
+		import { setupWebsocket } from "/static/websockets.js";
+		import { DrawingModule } from '/static/draw.js';
+		import { Event, DrawingEventType } from "/static/events.js"
+		import { Map } from "/static/map.js"
+		const isDraw = window.location.pathname == "/draw"
 
 		const drawingModuleInstance = new DrawingModule("back");
 		const map = new Map("top");
+		//colors of the palette !
+		let selectedColor = drawingModuleInstance.palette[0];//base color
+		colorMenuBtn.style.backgroundColor = selectedColor; //set the initial color of the background button
+		colorMenuBtn.style.border = "1px solid #000000";
+		colorOverlay.style.display = 'none';
+		// Create color swatches
+		drawingModuleInstance.palette.forEach(hex => {
+			const swatch = document.createElement('div');
+			swatch.classList.add("color-swatch");
+			swatch.style.backgroundColor = hex;
+			swatch.addEventListener('click', () => {
+				selectedColor = hex;
+				colorMenuBtn.style.backgroundColor = hex;
+				colorOverlay.style.display = 'none';
+				// update your drawing module
+				if (drawingModuleInstance) {
+					drawingModuleInstance.currentColor = drawingModuleInstance.hexToRgbObject(selectedColor);
+				}
+			});
+			document.getElementById("colorGrid").appendChild(swatch);
+		});
+
 
 		const sendMessage = await setupWebsocket(async (d) => {
-		  const events = Event.deserialize_list(await d.arrayBuffer());
-		  events.forEach((event) => {
-			if (event.type == DrawingEventType.ADD_ZONE) {
-				map.zones.push(event);
-				map.redraw();
-			} else {
-			drawingModuleInstance.HandleEvent(event);
-				
-			}
-				
+			const events = Event.deserialize_list(await d.arrayBuffer());
+			events.forEach((event) => {
+				if (event.type == DrawingEventType.ADD_ZONE) {
+					map.zones.push(event);
+					map.redraw();
+				} else {
+					drawingModuleInstance.HandleEvent(event);
+
+				}
+
 			});
-	  });
+		});
 
 		if (isDraw) {
 			document.getElementById("top").style.pointerEvents = "none";

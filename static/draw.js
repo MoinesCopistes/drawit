@@ -1,5 +1,14 @@
 import { Event, DrawingEventType } from "./events.js";
 
+const colorMenuBtn = document.getElementById('colorMenuBtn');
+const colorOverlay = document.getElementById('colorOverlay');
+
+
+
+// Toggle overlay
+colorMenuBtn.addEventListener('click', () => {
+  colorOverlay.style.display = colorOverlay.style.display === 'flex' ? 'none' : 'flex';
+});
 
 export const mobileCheck = () => {
   let check = false;
@@ -170,6 +179,9 @@ export class DrawingModule {
         this.ctx = this.canvas.getContext("2d")
         this.client_id = Math.floor(Math.random() * 255); // client id between 0 and 255 will be later assigned by server
         // console.log("DrawingModule created with client_id:", this.client_id);
+        this.palette = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff", "#ffffff", "#000000"];
+        this.currentColor = this.hexToRgbObject(this.palette[0]); // default color is black
+
     }
     HandleEvent(event) {
         // console.log(event);
@@ -254,7 +266,8 @@ export class DrawingModule {
                 ev.type = DrawingEventType.START;
                 ev.x = currX;
                 ev.y = currY;
-                ev.color = this.hexToRgbObject(document.getElementById('colorPicker').value);
+                ev.color = this.currentColor;
+                console.log("current color in draw.js:", this.currentColor);
                 ev.clientId = this.client_id;
                 send_data(ev.serialize())
                 state.total_requests_sent += 1;
@@ -287,7 +300,6 @@ export class DrawingModule {
                     ev.type = DrawingEventType.DRAW;
                     ev.x = currX;
                     ev.y = currY;
-                    ev.color = { r: 0, g: 0, b: 255 };
                     ev.clientId = this.client_id;
                     send_data(ev.serialize())
                     state.total_requests_sent += 1;
