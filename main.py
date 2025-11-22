@@ -2,7 +2,6 @@ import sanic
 from sanic import Sanic, Request, Websocket
 from sanic.response import text
 from client import Client
-from events import ASK_SNAPSHOT_EVENT
 from buffer import EventBuffer
 import asyncio
 
