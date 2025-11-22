@@ -84,12 +84,32 @@
 
 		/* Top Right - Mode Switch */
 		#modeSwitch {
+
+			position: absolute;
 			top: 20px;
 			right: 20px;
-			min-width: 100px;
-			font-weight: 600;
-			color: var(--text-main);
-			user-select: none;
+
+			min-width: auto;
+			width: 44px;
+			height: 44px;
+			padding: 10px;
+		}
+
+		#modeSwitch img {
+			width: 100%;
+			height: 100%;
+			display: none;
+			/* Hide both by default */
+			pointer-events: none;
+			/* Prevent dragging the image itself */
+		}
+
+		body.mode-drawing #modeSwitch .show-in-drawing {
+			display: block;
+		}
+
+		body.mode-view #modeSwitch .show-in-view {
+			display: block;
 		}
 
 		/* --- Canvas / Viewport --- */
@@ -152,4 +172,18 @@
 			pointer-events: none;
 			opacity: 0.8;
 			z-index: 90;
+		}
+
+		/* Mobile adjustments */
+		@media (max-width: 915px) {
+			.status-bar {
+				/* We must repeat translateX(-50%) to keep it centered, then add the scale */
+				transform: translateX(-50%) scale(0.7);
+
+				/* Anchors the scaling to the bottom so it doesn't float upwards */
+				transform-origin: bottom center;
+
+				/* Optional: since it's smaller, you might want it slightly closer to the edge */
+				bottom: 10px;
+			}
 		}

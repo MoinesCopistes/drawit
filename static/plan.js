@@ -41,7 +41,6 @@ function toggleMode() {
         state.mode = 'view';
         body.classList.remove('mode-drawing');
         body.classList.add('mode-view');
-        modeBtn.innerText = "Switch to Create";
         statusBar.innerText = "View Mode: Click zones to see info";
         // Clear error states when switching
         zoneInput.classList.remove('input-error');
@@ -49,7 +48,6 @@ function toggleMode() {
         state.mode = 'drawing';
         body.classList.remove('mode-view');
         body.classList.add('mode-drawing');
-        modeBtn.innerText = "Switch to View";
         statusBar.innerText = "Creation Mode: Enter name, then drag to create";
     }
 }
