@@ -1,14 +1,5 @@
 import { Event, DrawingEventType } from "./events.js";
 
-const colorMenuBtn = document.getElementById('colorMenuBtn');
-const colorOverlay = document.getElementById('colorOverlay');
-
-
-
-// Toggle overlay
-colorMenuBtn.addEventListener('click', () => {
-  colorOverlay.style.display = colorOverlay.style.display === 'flex' ? 'none' : 'flex';
-});
 
 export const mobileCheck = () => {
   let check = false;
@@ -42,7 +33,20 @@ const statusBar = document.getElementById('statusBar');
 const container = document.getElementById('canvas-container');
 const viewport = document.getElementById('viewport');
 const canvas = document.getElementById('back');
+const colorMenuBtn = document.getElementById('colorMenuBtn');
+const colorOverlay = document.getElementById('colorOverlay');
+const radiusSlider = document.getElementById('radiusSlider');
+const radiusValue = document.getElementById('radiusValue');
+
 const ctx = canvas.getContext('2d');
+
+// Toggle overlay
+colorMenuBtn.addEventListener('click', () => {
+  colorOverlay.style.display = colorOverlay.style.display === 'flex' ? 'none' : 'flex';
+});
+radiusSlider.addEventListener('input', () => {
+  radiusValue.textContent = radiusSlider.value;
+});
 modeBtn.addEventListener('click', toggleMode);
 // --- Mode Logic ---
 function toggleMode() {
@@ -180,7 +184,7 @@ export class DrawingModule {
         this.ctx = this.canvas.getContext("2d")
         this.client_id = Math.floor(Math.random() * 255); // client id between 0 and 255 will be later assigned by server
         // console.log("DrawingModule created with client_id:", this.client_id);
-        this.palette = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff", "#ffffff", "#000000"];
+        this.palette = ["#21B799","#714B67", "#017E84", "#8F8F8F", "#E46E78", "#5B899E", "#E4A900", "#F75110FF", "#ea2d5f","#b83e8b", "#755095", "#3c527f","#0067df" ,"#ffffff", "#000000"];
         this.currentColor = this.hexToRgbObject(this.palette[0]); // default color is black
 
     }
@@ -211,7 +215,11 @@ export class DrawingModule {
         const user_id = event.clientId;
 
         this.ctx.beginPath();
-        this.ctx.arc(event.x, event.y, `${this.strokeRadiuses[user_id]}`, 0, 2 * Math.PI, false);
+        //safety check for stroke radius (dont want it to go TOO bad would we ?)
+        console.log("Stroke radius is :", this.strokeRadiuses[user_id]);
+        const radius = Math.pow(15, Math.min(15, Number(this.strokeRadiuses[user_id]))/15);
+        console.log("Calculated radius is :", radius);
+        this.ctx.arc(event.x, event.y, radius, 0, 2 * Math.PI, false);
         this.ctx.fillStyle = `rgb(${this.drawingcolors[user_id].r}, ${this.drawingcolors[user_id].g}, ${this.drawingcolors[user_id].b})`;
         this.ctx.fill();
         this.ctx.lineWidth = 1;
@@ -226,7 +234,7 @@ export class DrawingModule {
                 this.ctx.lineTo(event.x, event.y);
                 this.ctx.strokeStyle = `rgb(${this.drawingcolors[user_id].r}, ${this.drawingcolors[user_id].g}, ${this.drawingcolors[user_id].b})`;
                 // console.log(event.color);
-                this.ctx.lineWidth = 2 * `${this.strokeRadiuses[user_id]}`;
+                this.ctx.lineWidth = 2 * radius;
                 this.ctx.stroke();
             }
         }
@@ -270,7 +278,7 @@ export class DrawingModule {
                 ev.y = currY;
                 ev.color = this.currentColor;
                 console.log("current color in draw.js:", this.currentColor);
-                ev.strokeRadius = document.getElementById('radiusPicker').value;
+                ev.strokeRadius = document.getElementById('radiusSlider').value;
                 ev.clientId = this.client_id;
                 send_data(ev.serialize())
                 state.total_requests_sent += 1;

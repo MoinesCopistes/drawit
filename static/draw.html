@@ -18,10 +18,12 @@
 		<div id="colorOverlay" class="overlay">
 			<div id="colorGrid" class="color-grid"></div>
 		</div>
-		
+
 		<div id="radiusTools" class="ui-element" title="Choose pen radius">
-			<input type="number" id="radiusPicker" min="1" max="40" value="1">
+			<input type="range" id="radiusSlider" min="1" max="15" value="8">
+			<span id="radiusValue">8</span>
 		</div>
+
 		<div id="usersCount" class="ui-element" title="Users connected">
 			<p id="count">5</p>
 		</div>
@@ -81,38 +83,38 @@
 			document.getElementById("colorGrid").appendChild(swatch);
 		});
 
-		let sleep = () => {};
+		let sleep = () => { };
 		if (document.location.href.includes("rewind")) {
 			sleep = (ms) => {
-			    return new Promise(resolve => setTimeout(resolve, ms));
-			}		
+				return new Promise(resolve => setTimeout(resolve, ms));
+			}
 		}
 
 		let count = 0;
 		const countElem = document.getElementById("count")
 		const sendMessage = await setupWebsocket(async (d) => {
-		  const events = Event.deserialize_list(await d.arrayBuffer());
+			const events = Event.deserialize_list(await d.arrayBuffer());
 			for (let event of events) {
 				await sleep(1)
 				if (event.type == DrawingEventType.USER_CONNECTED) {
-					count+=1;
+					count += 1;
 					countElem.innerHTML = count;
 				}
 				if (event.type == DrawingEventType.USER_DISCONNECTED) {
-					count-=1;
+					count -= 1;
 					countElem.innerHTML = count;
 				}
 				if (event.type == DrawingEventType.ADD_ZONE) {
 					map.zones.push(event);
 					map.redraw();
 				} else {
-				drawingModuleInstance.HandleEvent(event);
-				
+					drawingModuleInstance.HandleEvent(event);
+
 				}
-				
+
 			}
 
-	  });
+		});
 
 		if (isDraw) {
 			document.getElementById("top").style.pointerEvents = "none";
