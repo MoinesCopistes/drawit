@@ -1,6 +1,6 @@
 import asyncio
 
-BATCH_SIZE = 100000 # 1000 * 20 bytes is 2Mo
+BATCH_SIZE = 200000 # 200 000 * 10 bytes is 2Mo
 
 class EventBuffer:
     def __init__(self):
