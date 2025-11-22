@@ -6,44 +6,65 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>drawit</title>
 	<link rel="stylesheet" href="/static/index.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<script src='/static/external/panzoom.min.js'></script>
+
 </head>
 
 <body>
 
-	<div class="container">
-		<h1>drawit</h1>
+	
 
-		<a href="/plan" class="btn btn-primary">
-			Create a drawing
-		</a>
 
-		<div class="divider">OR</div>
-
-		<div class="join-section">
-			<form id="joinForm" onsubmit="handleJoin(event)">
-				<div class="input-group">
-					<input type="text" id="roomCode" placeholder="Enter room code" required aria-label="Room Code">
-					<button type="submit" class="btn btn-secondary" style="width: auto; min-width: 100px;">
-						Join
-					</button>
-				</div>
-			</form>
+	<div id="viewport">
+		<div id="canvas-container">
+			<canvas id="canva_index" width="3840" height="2160"></canvas>
 		</div>
 	</div>
+	</div>
 
-	<script type="module">	
-		function handleJoin(event) {
-			event.preventDefault();
-			const code = document.getElementById('roomCode').value;
-			if (code) {
-				// Mock validation logic
-				console.log(`Attempting to join room: ${code}`);
-				// Redirect logic would go here, e.g.:
-				// window.location.href = `/room/${code}`;
-				alert(`Joining room: ${code}`);
+
+
+	<script type="module">
+		import { DrawingModule } from '/static/draw.js';
+		import { Event, DrawingEventType } from "/static/events.js"
+		const params = new URLSearchParams(window.location.search);
+		const dumpName = params.get("name") || "index"; // default to "index" for index.html
+		let dumpFile;
+		//tries to import the specified dump file, falls back to index.js if not found
+		try {
+			const path = `/static/saved/${dumpName}.js`;
+			dumpFile = await import(path);
+		} catch (err) {
+			console.warn(`Could not import /static/saved/${dumpName}.js, falling back to index`, err);
+			try {
+				dumpFile = await import('/static/saved/index.js');
+			} catch (err2) {
+				console.error('Fallback /static/saved/index.js not found', err2);
+				dumpFile = { dumpBytes: new Uint8Array(0) };
 			}
 		}
+		const dumpBytes = dumpFile.dumpBytes;
+		const drawingModuleInstance = new DrawingModule("canva_index");
+		//colors of the palette !
+
+		let sleep = () => { };
+			sleep = (ms) => {
+				return new Promise(resolve => setTimeout(resolve, ms));
+			}
+		
+
+
+		const events = Event.deserialize_list(dumpBytes.buffer);
+		for (let i = 0; i < events.length; i++) {
+			const event = events[i];
+			await sleep(2)
+			drawingModuleInstance.HandleEvent(event);
+				
+		}
+
 	</script>
+
 
 </body>
 

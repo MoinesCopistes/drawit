@@ -1,61 +1,55 @@
 import { Event, DrawingEventType } from "./events.js";
+const colorMenuBtn = document.getElementById('colorMenuBtn');
+const colorOverlay = document.getElementById('colorOverlay');
 
- const colorMenuBtn = document.getElementById('colorMenuBtn');
- const colorOverlay = document.getElementById('colorOverlay');
- 
- 
- 
-// Toggle overlay
-
-
-
-const isDraw = window.location.pathname == "/draw"
-let element = document.getElementById("canvas-container")
-const initialZoom = window.innerWidth * (0.45/1882)
-let instance = panzoom(element, {bounds:true, boundPadding:0.5, maxZoom:1, minZoom:0.05, initialZoom: initialZoom});
-instance.moveTo(window.innerWidth/2 - (parseInt(element.style.width) * initialZoom /2 ), window.innerHeight/2 - (parseInt(element.style.height) * initialZoom/2));
-
-if (isDraw) {
-
-    window.mode = 'view';
-    document.body.classList.add(`mode-${window.mode}`)
-} else {
-    document.getElementById("modeSwitch").style.display = "none"
-    document.getElementById("toolstop").style.display = "none"
-    window.mode = 'drawing';
-    document.body.classList.add(`mode-${window.mode}`)
-    instance.pause();
-
-}
-const modeBtn = document.getElementById('modeSwitch');
-const radiusSlider = document.getElementById('radiusSlider');
-const radiusValue = document.getElementById('radiusValue');
 
 
 // Toggle overlay
-colorMenuBtn.addEventListener('click', () => {
-  colorOverlay.style.display =  'flex';
-});
-radiusSlider.addEventListener('input', () => {
-  radiusValue.textContent = radiusSlider.value;
-});
-modeBtn.addEventListener('click', toggleMode);
 
-function toggleMode() {
-    if (window.mode === 'drawing') {
-        instance.resume()
-        mode = 'view';
-        document.body.classList.remove('mode-drawing');
-        document.body.classList.add('mode-view');
+export function allotherthings() {
+
+    const isDraw = window.location.pathname == "/draw"
+    let element = document.getElementById("canvas-container")
+    let instance = panzoom(element, { initialZoom: 0.5 });
+
+    if (isDraw) {
+
+        window.mode = 'view';
+        document.body.classList.add(`mode-${window.mode}`)
     } else {
-        instance.pause();
         window.mode = 'drawing';
-        document.body.classList.remove('mode-view');
-        document.body.classList.add('mode-drawing');
+        document.body.classList.add(`mode-${window.mode}`)
+        instance.pause();
+
+    }
+    const modeBtn = document.getElementById('modeSwitch');
+    const radiusSlider = document.getElementById('radiusSlider');
+    const radiusValue = document.getElementById('radiusValue');
+
+
+    // Toggle overlay
+    colorMenuBtn.addEventListener('click', () => {
+        colorOverlay.style.display = 'flex';
+    });
+    radiusSlider.addEventListener('input', () => {
+        radiusValue.textContent = radiusSlider.value;
+    });
+    modeBtn.addEventListener('click', toggleMode);
+
+    function toggleMode() {
+        if (window.mode === 'drawing') {
+            instance.resume()
+            mode = 'view';
+            document.body.classList.remove('mode-drawing');
+            document.body.classList.add('mode-view');
+        } else {
+            instance.pause();
+            window.mode = 'drawing';
+            document.body.classList.remove('mode-view');
+            document.body.classList.add('mode-drawing');
+        }
     }
 }
-
-
 class Point {
     constructor(x, y) {
         this.x = x;
@@ -72,7 +66,7 @@ export class DrawingModule {
         this.ctx = this.canvas.getContext("2d")
         this.client_id = Math.floor(Math.random() * 255); // client id between 0 and 255 will be later assigned by server
         // console.log("DrawingModule created with client_id:", this.client_id);
-        this.palette = ["#21B799","#714B67", "#017E84", "#8F8F8F", "#E46E78", "#5B899E", "#E4A900", "#F75110FF", "#ea2d5f","#b83e8b", "#755095", "#3c527f","#0067df" ,"#ffffff", "#000000"];
+        this.palette = ["#21B799", "#714B67", "#017E84", "#8F8F8F", "#E46E78", "#5B899E", "#E4A900", "#F75110FF", "#ea2d5f", "#b83e8b", "#755095", "#3c527f", "#0067df", "#ffffff", "#000000"];
         this.currentColor = this.hexToRgbObject(this.palette[0]); // default color is black
 
     }
@@ -84,6 +78,7 @@ export class DrawingModule {
             this.drawingcolors[event.clientId] = event.color;
             this.strokeRadiuses[event.clientId] = event.strokeRadius;
             this.drawEventsOnCanva(event);
+            console.log("yobro");
         }
         else if (event.type === DrawingEventType.END) {
             //clear PreviousPointsDict for this clientId
@@ -196,7 +191,7 @@ export class DrawingModule {
                     ev.x = currX;
                     ev.y = currY;
                     ev.clientId = this.client_id;
-                    
+
                     send_data(ev.serialize())
 
                     //self.HandleEvent(canvaId, ev);
