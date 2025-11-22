@@ -11,7 +11,7 @@ app.static("/static/", "./static/", directory_view=True, name="static")
 app.static("/", "./static/index.html", name="index")
 app.static("/plan", "./static/draw.html", name="plan")
 app.static("/draw", "./static/draw.html", name="draw")
-
+app.static("/load", "./static/index.html", name="load")
 connections = []
 eventsBuffer = EventBuffer()
 snapshotAskEvent = bytes([4] + [0]*9)
@@ -62,7 +62,8 @@ async def feed(request: Request, ws: Websocket):
 
 @app.route("/save")
 async def save(request):
-    with open("static/eventdump.js", "w") as f:
+    name = request.args.get("name", "eventdump.js")
+    with open(f"static/saved/{name}.js", "w") as f:
         async with eventsBuffer.lock:
             flat_bytes = b''.join(eventsBuffer.buffer)
             js_values = [f"0x{byte:02x}" for byte in flat_bytes]

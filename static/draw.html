@@ -64,11 +64,11 @@
 	
 	<script type="module">
 		import { setupWebsocket } from "/static/websockets.js";
-		import { DrawingModule } from '/static/draw.js';
+		import { DrawingModule, allotherthings } from '/static/draw.js';
 		import { Event, DrawingEventType } from "/static/events.js"
 		import { Map } from "/static/map.js"
 		const isDraw = window.location.pathname == "/draw"
-
+		allotherthings()
 		const drawingModuleInstance = new DrawingModule("back");
 		const map = new Map("top");
 		//colors of the palette !
