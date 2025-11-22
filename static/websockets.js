@@ -6,7 +6,9 @@
 // sendMessage = setupWebsocket((d) => console.log("Received: ", d))
 // sendMessage("lolilol")
 export const setupWebsocket = async (eventCallback) => {
-  window.socket = new WebSocket("ws://localhost:8000/feed")
+  const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
+  const url = `${wsProtocol}//${location.host}/feed`;
+  window.socket = new WebSocket(url);
 
   window.socket.addEventListener("message", (event) => {
     eventCallback(event.data)

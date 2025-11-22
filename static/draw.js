@@ -155,57 +155,55 @@ class Point {
     }
 }
 export class DrawingModule {
-    constructor() {
+    constructor(canvaId) {
         this.PreviousPointsDict = {};//dictionary with key = clientId , value = points array object
+        this.canvas = document.getElementById(canvaId)
+        console.log(canvaId, this.canvas)
+        this.ctx = this.canvas.getContext("2d")
+        this.client_id = Math.random().toString(36).substring(2, 15);
+
+    }
+    HandleEvent(event) {
+ 
+         if (event.type === DrawingEventType.START) {
+             //reset PreviousPointsDict for this clientId
+             this.PreviousPointsDict[event.clientId] = [];
+            this.drawEventsOnCanva(event);
+         }
+         else if (event.type === DrawingEventType.END) {
+             //clear PreviousPointsDict for this clientId
+             delete this.PreviousPointsDict[event.clientId];
+         }
+         else if (event.type === DrawingEventType.DRAW) {
+            this.drawEventsOnCanva(event);
+         }
+ 
     }
 
-    HandleEvent(canva, event) {
-        if (state.mode == "drawing") {
-
-            if (event.type === DrawingEventType.START) {
-                //reset PreviousPointsDict for this clientId
-                this.PreviousPointsDict[event.clientId] = [];
-                this.drawEventsOnCanva(canva, event);
-            }
-            else if (event.type === DrawingEventType.END) {
-                //clear PreviousPointsDict for this clientId
-                delete this.PreviousPointsDict[event.clientId];
-            }
-            else if (event.type === DrawingEventType.DRAW) {
-                this.drawEventsOnCanva(canva, event);
-            }
-        }
-    }
-
-    drawEventsOnCanva(canva, event) {
-        //@args : 
-        //          canva : id of the canvas element, a string
-        //          events : list of DrawingEvent objects
-        const canvas = document.getElementById(canva);
-        const ctx = canvas.getContext("2d");
-        console.log("Drawing a DrawingEvent:");
-        console.log(event);
-        console.log(this.PreviousPointsDict)
+    drawEventsOnCanva(event) {
+        // console.log("Drawing a DrawingEvent:");
+        // console.log(event);
+        // console.log(this.PreviousPointsDict)
 
         const user_id = event.clientId;
 
-        ctx.beginPath();
-        ctx.arc(event.x, event.y, 3, 0, 2 * Math.PI, false);
-        ctx.fillStyle = '#000000ff';
-        ctx.fill();
-        ctx.lineWidth = 1;
+        this.ctx.beginPath();
+        this.ctx.arc(event.x, event.y, 3, 0, 2 * Math.PI, false);
+        this.ctx.fillStyle = '#000000ff';
+        this.ctx.fill();
+        this.ctx.lineWidth = 1;
 
         //if already points for user_id in PreviousPointsDict, create a line between last point and current point
         if (user_id in this.PreviousPointsDict) {
             const pointsArray = this.PreviousPointsDict[user_id];
             if (pointsArray.length > 0) {
                 const lastPoint = pointsArray[pointsArray.length - 1];
-                ctx.beginPath();
-                ctx.moveTo(lastPoint.x, lastPoint.y);
-                ctx.lineTo(event.x, event.y);
-                ctx.strokeStyle = '#000000ff';
-                ctx.lineWidth = 2 * 3;
-                ctx.stroke();
+                this.ctx.beginPath();
+                this.ctx.moveTo(lastPoint.x, lastPoint.y);
+                this.ctx.lineTo(event.x, event.y);
+                this.ctx.strokeStyle = '#000000ff';
+                this.ctx.lineWidth = 2 * 3;
+                this.ctx.stroke();
             }
         }
 
@@ -217,24 +215,14 @@ export class DrawingModule {
         this.PreviousPointsDict[user_id].push(new Point(event.x, event.y));
 
     }
-
-    init (canvaId) {
-        // canvas and context
-        const client_id = Math.random().toString(36).substring(2, 15);
-        return client_id;
-    }
-    listen(canvaId, client_id) {
-        // canvas and context
-        const canvas = document.getElementById(canvaId);
-
+    listen(send_data) {
         // local state variables
         let flag = false;//reprensents if mouse is pressed
         let currX = 0;
         let currY = 0;
 
-        const self = this;
         // handle mouse events
-        function findxy(res, e) {
+        const findxy = (res, e) => {
             const rect = canvas.getBoundingClientRect();
             // 1. Calculate the ratio between screen pixels and canvas pixels
             const scaleX = canvas.width / rect.width;
@@ -253,8 +241,9 @@ export class DrawingModule {
                 ev.type = DrawingEventType.START;
                 ev.x = currX;
                 ev.y = currY;
-                ev.clientId = client_id;
-                self.HandleEvent(canvaId, ev);
+                ev.clientId = this.client_id;
+                send_data(ev.serialize())
+                //self.HandleEvent(canvaId, ev);
 
 
             }
@@ -266,8 +255,10 @@ export class DrawingModule {
                 ev.type = DrawingEventType.END;
                 ev.x = currX;
                 ev.y = currY;
-                ev.clientId = client_id;
-                self.HandleEvent(canvaId, ev);
+                ev.clientId = this.client_id;
+                send_data(ev.serialize())
+                
+                //self.HandleEvent(canvaId, ev);
             }
 
             if (res === 'move') {
@@ -280,23 +271,25 @@ export class DrawingModule {
                     ev.type = DrawingEventType.DRAW;
                     ev.x = currX;
                     ev.y = currY;
-                    ev.clientId = client_id;
-                    self.HandleEvent(canvaId, ev);
+                    ev.clientId = this.client_id;
+                    send_data(ev.serialize())
+
+                    //self.HandleEvent(canvaId, ev);
                 }
             }
         }
 
         // attach listeners
-        canvas.addEventListener("mousemove", function (e) {
+        this.canvas.addEventListener("mousemove", (e) => {
             findxy('move', e);
         });
-        canvas.addEventListener("mousedown", function (e) {
+        this.canvas.addEventListener("mousedown", (e) => {
             findxy('down', e);
         });
-        canvas.addEventListener("mouseup", function (e) {
+        this.canvas.addEventListener("mouseup", (e) => {
             findxy('up', e);
         });
-        canvas.addEventListener("mouseout", function (e) {
+        this.canvas.addEventListener("mouseout", (e) => {
             findxy('out', e);
         });
     }

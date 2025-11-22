@@ -46,7 +46,7 @@ export class Event {
     	let size;
     	switch(this.type) {
     		case DrawingEventType.START :
-    			size = 10;
+    			size = 14;
     			break;
     		case DrawingEventType.DRAW :
     			size = 15;
@@ -69,6 +69,9 @@ export class Event {
 		
 		switch(this.type) {
     		case DrawingEventType.START :
+    			w.write("setUint16", this.x, 2);
+    			w.write("setUint16", this.y, 2);
+
     			break;
     		case DrawingEventType.DRAW :
     			w.write("setUint16", this.x, 2);
@@ -100,6 +103,9 @@ export class Event {
     		 
     	switch(received_event.type) {
     		case DrawingEventType.START :
+    			received_event.x = r.read("getUint16", 2);
+    			received_event.y = r.read("getUint16", 2);
+
     			break;
     		case DrawingEventType.DRAW :
     			received_event.x = r.read("getUint16", 2);
