@@ -1,6 +1,6 @@
 import sanic
 from sanic import Sanic, Request, Websocket
-from sanic.response import text, redirect
+from sanic.response import file, text, redirect
 from client import Client
 from buffer import EventBuffer
 import asyncio
@@ -60,3 +60,19 @@ async def feed(request: Request, ws: Websocket):
         connections.remove(client)
         await eventsBuffer.append(DISCONNECTED_EVENT)
 
+@app.route("/save")
+async def save(request):
+    with open("static/eventdump.js", "w") as f:
+        async with eventsBuffer.lock:
+            flat_bytes = b''.join(eventsBuffer.buffer)
+            js_values = [f"0x{byte:02x}" for byte in flat_bytes]
+
+        injection_block = f"export const dumpBytes = new Uint8Array([{', '.join(js_values)}]);"
+        f.write(injection_block)
+
+
+    return text("done")
+
+@app.route("/eventdump.js")
+async def serve_file_from_disk(request):
+    return await file("static/eventdump.js", mime_type="application/javascript")
