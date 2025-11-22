@@ -18,9 +18,9 @@ class Writer {
 }
 
 class Reader {
-	constructor(view) {
+	constructor(view, offset=0) {
 		this.view = view;
-		this.offset = 0;
+		this.offset = offset;
 	}
 	
 	read(func,size) {
@@ -84,11 +84,11 @@ export class Event {
     	return buffer2;
     }
     
-    static deserialize(array_buffer) {
+    static deserialize(array_buffer, offset=0) {
     	const received_event = new Event();
     
     	const view = new DataView(array_buffer);
-    	const r = new Reader(view);
+    	const r = new Reader(view, offset);
  
  		received_event.type = r.read("getUint8", 1);
  		received_event.timestamp = r.read("getFloat64", 8);
@@ -117,9 +117,26 @@ export class Event {
     			break;
     	}
     	
+    	    	
+    	return {event: received_event, offset: r.offset};
     	
-    	return received_event;
+    }
+    
+    static deserialize_list(array_buffer) {
+    	let events = [];
+    	const buff_size = array_buffer.byteLength;
     	
+    	let offset = 0;
+    	let event;
+    		
+    		
+    	while(offset < array_buffer.byteLength) {
+    		({event, offset} = Event.deserialize(array_buffer, offset));
+    		events.push(event);
+    	}
+    	
+    		
+    	return events;
     }
 }
 
@@ -149,9 +166,51 @@ export const test_event_serialization = () => {
 	console.log(leel.color["b"]);
 	console.log(leel.color["g"]);
 	console.log(leel.strokeId);
-	
-
 }
 
-// TODO: Find some nice way to serialize this into binary
-
+export const test_event_serialization_big = () => {
+	const jaaj = new Event();
+	jaaj.type = DrawingEventType.DRAW;
+	jaaj.timestamp = 1763766859065;
+	jaaj.clientId = 69;
+	jaaj.x = 150;
+	jaaj.y = 150;
+	jaaj.w = 50;
+	jaaj.h = 60;
+	jaaj.strokeId = 1;
+	
+	const soos = new Event();
+	soos.type = DrawingEventType.START;
+	soos.timestamp = 1763766859069;
+	soos.clientId = 69;
+	soos.x = 150;
+	soos.y = 150;
+	soos.w = 50;
+	soos.h = 60;
+	soos.strokeId = 1;
+	
+	const leel = new Event();
+	leel.type = DrawingEventType.ADD_ZONE;
+	leel.timestamp = 1763766859420;
+	leel.clientId = 69;
+	leel.x = 150;
+	leel.y = 150;
+	leel.w = 50;
+	leel.h = 60;
+	leel.strokeId = 1;
+	
+	const jaaj_ser = jaaj.serialize();
+	const soos_ser = soos.serialize();
+	const leel_ser = leel.serialize();
+	
+	const buffer = new ArrayBuffer(jaaj_ser.byteLength+soos_ser.byteLength+leel_ser.byteLength);
+	new Uint8Array(buffer, 0).set(new Uint8Array(jaaj_ser));
+	new Uint8Array(buffer, jaaj_ser.byteLength).set(new Uint8Array(soos_ser));
+	new Uint8Array(buffer, jaaj_ser.byteLength + soos_ser.byteLength).set(new Uint8Array(leel_ser));
+	
+	const res = Event.deserialize_list(buffer);
+	
+	console.log(res[0].type);
+	console.log(res[1].type);
+	console.log(res[2].type);
+}
