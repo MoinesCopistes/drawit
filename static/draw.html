@@ -66,17 +66,17 @@
 				}
 				
 			}
-			if (isDraw) {
-				document.getElementById("top").style.pointerEvents = "none";
-				drawingModuleInstance.listen(sendMessage);
-			}
-
-			if (!isDraw) {
-				map.setupHandlers();
-			}
 
 	  });
 
+		if (isDraw) {
+			document.getElementById("top").style.pointerEvents = "none";
+			drawingModuleInstance.listen(sendMessage);
+		}
+
+		if (!isDraw) {
+			map.setupHandlers();
+		}
 
 	</script>
 
