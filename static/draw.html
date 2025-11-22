@@ -8,6 +8,9 @@
 	<link rel="stylesheet" href="/static/draw.css">
 </head>
 
+
+
+
 <body class="mode-drawing">
 
 	<div class="ui-layer">
@@ -24,7 +27,14 @@
 
 	<div id="viewport">
 		<div id="canvas-container">
-			<canvas id="mainCanvas" width="2000" height="2000"></canvas>
+			<canvas id="DrawingCanva" width="2000" height="2000"></canvas>
+			<script type="module">
+				import { DrawingModule } from '/static/draw.js';
+
+				const drawingModuleInstance = new DrawingModule();
+				const client_id = drawingModuleInstance.init("DrawingCanva");
+				drawingModuleInstance.listen("DrawingCanva", client_id);
+			</script>
 			<div class="canvas-label">Canvas (2000x2000)</div>
 		</div>
 	</div>
