@@ -30,23 +30,23 @@
 		</div>
 	</div>
 
-	<script type="module" src="/static/draw.js"></script>
- 
- 
- <script type="module">
-   import {setupWebsocket} from "/static/websockets.js";
-	import { DrawingModule } from '/static/draw.js';
-	import {Event} from "/static/events.js"
 
-  const sendMessage = await setupWebsocket(async (d) => {
-		const event = Event.deserialize(await d.arrayBuffer());
-		drawingModuleInstance.HandleEvent(event);
-	});
 
-	const drawingModuleInstance = new DrawingModule("DrawingCanva");
-	drawingModuleInstance.listen(sendMessage);
- 
- </script>
+	<script type="module">
+		import { setupWebsocket } from "/static/websockets.js";
+		import { DrawingModule } from '/static/draw.js';
+		import { Event } from "/static/events.js"
+		const drawingModuleInstance = new DrawingModule("DrawingCanva");
+
+		const sendMessage = await setupWebsocket(async (d) => {
+			const event = Event.deserialize(await d.arrayBuffer());
+			drawingModuleInstance.HandleEvent(event);
+		});
+
+		drawingModuleInstance.listen(sendMessage);
+		window.drawingModuleInstance = drawingModuleInstance;
+
+	</script>
 
 </body>
 
