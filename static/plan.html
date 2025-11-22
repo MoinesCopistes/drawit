@@ -24,8 +24,7 @@
 
 	<div id="viewport">
 		<div id="canvas-container">
-			<div class="canvas-label">Zone Admin</div>
-			<canvas id="PlanCanva" width="2000" height="2000"></canvas>
+			<canvas id="Canva" width="2000" height="2000"></canvas>
 		</div>
 	</div>
 
@@ -33,31 +32,31 @@
 
 	<script type="module">
 
-		import { DrawingModule } from '/static/draw.js';
-		import { Event, DrawingEventType } from '/static/events.js';
-		const canvaId = "PlanCanva";
-		const drawingModuleInstance = new DrawingModule();
-		const client_id = drawingModuleInstance.init(canvaId);
+		import {DrawingModule} from '/static/draw.js';
+		import {Event, DrawingEventType} from '/static/events.js';
+		const canvaId = "Canva";
+		const drawingModuleInstance = new DrawingModule(canvaId);
+		const client_id = drawingModuleInstance.client_id;
 		const ev = new Event();
 		ev.type = DrawingEventType.START;
 		ev.x = 100;
 		ev.y = 100;
 		ev.clientId = client_id;
-		drawingModuleInstance.HandleEvent(canvaId, ev);
+		drawingModuleInstance.HandleEvent(ev);
 
 		const draw_event = new Event();
 		draw_event.type = DrawingEventType.DRAW;
 		draw_event.x = 400;
 		draw_event.y = 400;
 		draw_event.clientId = client_id;
-		drawingModuleInstance.HandleEvent(canvaId, draw_event);
+		drawingModuleInstance.HandleEvent(draw_event);
 
 		const end_event = new Event();
 		end_event.type = DrawingEventType.END;
 		end_event.x = 400;
 		end_event.y = 400;
 		end_event.clientId = client_id;
-		drawingModuleInstance.HandleEvent(canvaId, end_event);
+		drawingModuleInstance.HandleEvent(end_event);
 
 
 	</script>

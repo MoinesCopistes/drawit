@@ -25,7 +25,7 @@ const modeBtn = document.getElementById('modeSwitch');
 const statusBar = document.getElementById('statusBar');
 const container = document.getElementById('canvas-container');
 const viewport = document.getElementById('viewport');
-const canvas = document.getElementById('mainCanvas');
+const canvas = document.getElementById('Canva');
 const ctx = canvas.getContext('2d');
 const zoneInput = document.getElementById('zoneNameInput');
 
