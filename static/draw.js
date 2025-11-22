@@ -32,7 +32,7 @@ const modeBtn = document.getElementById('modeSwitch');
 const statusBar = document.getElementById('statusBar');
 const container = document.getElementById('canvas-container');
 const viewport = document.getElementById('viewport');
-const canvas = document.getElementById('Canva');
+const canvas = document.getElementById('back');
 const ctx = canvas.getContext('2d');
 modeBtn.addEventListener('click', toggleMode);
 // --- Mode Logic ---

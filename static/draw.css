@@ -112,7 +112,7 @@
 
 		#canvas-container {
 			background-color: var(--canvas-bg);
-			position: absolute;
+			position: relative;
 			top: 0;
 			left: 0;
 			transform-origin: 0 0;
@@ -121,5 +121,18 @@
 			/* Dotted pattern to recognize movement */
 			background-image: none;
 			background-size: 20px 20px;
+		}
+
+		#canvas-container canvas {
+			position: absolute;
+		}
+		#canvas-container #back {
+			z-index: 0;
+			background-color: white;
+
+		}
+		#canvas-container #top {
+			z-index: 1;
+
 		}
 

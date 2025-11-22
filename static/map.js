@@ -1,3 +1,5 @@
+import { Event, DrawingEventType } from "./events.js";
+
 export class Map {
   constructor(mapId) {
     this.canvas = document.getElementById(mapId);
@@ -26,11 +28,19 @@ export class Map {
       this.drawRect(this.getBoundingBox(this.startPoint, this.endPoint));
     });
 
-    this.canvas.addEventListener("mouseup", () => {
+    this.canvas.addEventListener("mouseup", async () => {
       if (!this.drawing) return;
       this.drawing = false;
-      this.addZone(this.getBoundingBox(this.startPoint, this.endPoint));
-      this.redraw();
+      let ev = new Event();
+      ev.type = DrawingEventType.ADD_ZONE;
+      const box = this.getBoundingBox(this.startPoint, this.endPoint);
+      ev.x = box.x;
+      ev.y = box.y;
+      ev.w = box.w;
+      ev.h = box.h;
+      await window.socket.send(ev.serialize())
+      // this.addZone(this.getBoundingBox(this.startPoint, this.endPoint));
+      // this.redraw();
     });
   }
 
