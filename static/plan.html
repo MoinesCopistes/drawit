@@ -24,7 +24,6 @@
 
 	<div id="viewport">
 		<div id="canvas-container">
-			<div class="canvas-label">Zone Admin</div>
 			<canvas id="PlanCanva" width="2000" height="2000"></canvas>
 		</div>
 	</div>
@@ -33,8 +32,8 @@
 
 	<script type="module">
 
-		import { DrawingModule } from '/static/draw.js';
-		import { Event, DrawingEventType } from '/static/events.js';
+		import {DrawingModule} from '/static/draw.js';
+		import {Event, DrawingEventType} from '/static/events.js';
 		const canvaId = "PlanCanva";
 		const drawingModuleInstance = new DrawingModule();
 		const client_id = drawingModuleInstance.init(canvaId);
