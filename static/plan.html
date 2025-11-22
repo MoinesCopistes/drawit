@@ -1,44 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Document</title>
 </head>
+
 <body>
-This is were you make the image composition.
+	This is were you make the image composition.
 
-</br>
- <canvas id="PlanCanva" width="2000" height="1000" style="border:1px solid black;">
-</canvas>
+	</br>
+	<canvas id="PlanCanva" width="2000" height="1000" style="border:1px solid black;">
+	</canvas>
 
-<script type="module">
+	<script type="module">
 
-import { DrawingModule } from '/static/draw.js';
-import {DrawingEvent, DrawingEventType} from '/static/events.js';
-const drawingModuleInstance = new DrawingModule();
+		import { DrawingModule } from '/static/draw.js';
+		import { Event, DrawingEventType } from '/static/events.js';
+		const canvaId = "PlanCanva";
+		const drawingModuleInstance = new DrawingModule();
+		const client_id = drawingModuleInstance.init(canvaId);
+		const ev = new Event();
+		ev.type = DrawingEventType.START;
+		ev.x = 100;
+		ev.y = 100;
+		ev.clientId = client_id;
+		drawingModuleInstance.HandleEvent(canvaId, ev);
 
-const start_event = new DrawingEvent({
-	type: DrawingEventType.START,
-	x: 100,
-	y: 100
-});
-drawingModuleInstance.HandleEvent("PlanCanva", start_event);
+		const draw_event = new Event();
+		draw_event.type = DrawingEventType.DRAW;
+		draw_event.x = 400;
+		draw_event.y = 400;
+		draw_event.clientId = client_id;
+		drawingModuleInstance.HandleEvent(canvaId, draw_event);
 
-const draw_event = new DrawingEvent({
-	type: DrawingEventType.DRAW,
-	x: 200,
-	y: 200
-});
-drawingModuleInstance.HandleEvent("PlanCanva", draw_event);
-const end_event = new DrawingEvent({
-	type: DrawingEventType.END,
-	x: 200,
-	y: 200
-});
-drawingModuleInstance.HandleEvent("PlanCanva", end_event);
+		const end_event = new Event();
+		end_event.type = DrawingEventType.END;
+		end_event.x = 400;
+		end_event.y = 400;
+		end_event.clientId = client_id;
+		drawingModuleInstance.HandleEvent(canvaId, end_event);
 
-</script>
-Clients can join to draw <a href="/draw">here.</a>
+
+	</script>
+	Clients can join to draw <a href="/draw">here.</a>
 </body>
+
 </html>

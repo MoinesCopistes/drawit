@@ -1,4 +1,4 @@
-import { DrawingEvent, DrawingEventType } from "./events.js";
+import { Event, DrawingEventType } from "./events.js";
 // This should take a canvas element and draw a list of events on it
 // (events from events.js)
 
@@ -10,19 +10,19 @@ class Point {
 }
 export class DrawingModule {
     constructor() {
-        this.PreviousPointsDict = {};//dictionary with key = user_id , value = points array object
+        this.PreviousPointsDict = {};//dictionary with key = clientId , value = points array object
     }
 
     HandleEvent(canva, event) {
 
         if (event.type === DrawingEventType.START) {
-            //reset PreviousPointsDict for this user_id
-            this.PreviousPointsDict[event.user_id] = [];
+            //reset PreviousPointsDict for this clientId
+            this.PreviousPointsDict[event.clientId] = [];
             this.drawEventsOnCanva(canva, event);
         }
         else if (event.type === DrawingEventType.END) {
-            //clear PreviousPointsDict for this user_id
-            delete this.PreviousPointsDict[event.user_id];
+            //clear PreviousPointsDict for this clientId
+            delete this.PreviousPointsDict[event.clientId];
         }
         else if (event.type === DrawingEventType.DRAW) {
             this.drawEventsOnCanva(canva, event);
@@ -40,7 +40,7 @@ export class DrawingModule {
         console.log(event);
         console.log(this.PreviousPointsDict)
 
-        const user_id = event.user_id;
+        const user_id = event.clientId;
 
         ctx.beginPath();
         ctx.arc(event.x, event.y, 3, 0, 2 * Math.PI, false);
@@ -71,10 +71,13 @@ export class DrawingModule {
 
     }
 
-
-    init(canvaId) {
+    init (canvaId) {
         // canvas and context
-        const user_id = Math.random().toString(36).substring(2, 15);
+        const client_id = Math.random().toString(36).substring(2, 15);
+        return client_id;
+    }
+    listen(canvaId, client_id) {
+        // canvas and context
         const canvas = document.getElementById(canvaId);
 
         // local state variables
@@ -82,7 +85,7 @@ export class DrawingModule {
         let currX = 0;
         let currY = 0;
 
-        const self = this; 
+        const self = this;
         // handle mouse events
         function findxy(res, e) {
             const rect = canvas.getBoundingClientRect();
@@ -94,12 +97,12 @@ export class DrawingModule {
                 currY = mouseY;
                 flag = true;
                 //create object event of type "start" : 
-                self.HandleEvent(canvaId, new DrawingEvent({
-                    type: DrawingEventType.START,
-                    x: currX,
-                    y: currY,
-                    user_id: user_id
-                }));
+                const ev = new Event();
+                ev.type = DrawingEventType.START;
+                ev.x = currX;
+                ev.y = currY;
+                ev.clientId = client_id;
+                self.HandleEvent(canvaId, ev);
 
 
             }
@@ -107,12 +110,12 @@ export class DrawingModule {
             if (res === 'up' || res === 'out') {
                 flag = false;
                 //create object event of type "end" : 
-                self.HandleEvent(canvaId, new DrawingEvent({
-                    type: DrawingEventType.END,
-                    x: currX,
-                    y: currY,
-                    user_id: user_id
-                }));
+                const ev = new Event();
+                ev.type = DrawingEventType.END;
+                ev.x = currX;
+                ev.y = currY;
+                ev.clientId = client_id;
+                self.HandleEvent(canvaId, ev);
             }
 
             if (res === 'move') {
@@ -121,12 +124,12 @@ export class DrawingModule {
                     currY = mouseY;
 
                     //create object event and call drawEventsOnCanva
-                    self.HandleEvent(canvaId, new DrawingEvent({
-                        type: DrawingEventType.DRAW,
-                        x: currX,
-                        y: currY,
-                        user_id: user_id
-                    }));
+                    const ev = new Event();
+                    ev.type = DrawingEventType.DRAW;
+                    ev.x = currX;
+                    ev.y = currY;
+                    ev.clientId = client_id;
+                    self.HandleEvent(canvaId, ev);
                 }
             }
         }
