@@ -33,7 +33,7 @@ class Reader {
 export class Event {
     constructor() {
         this.type = 0; //1
-        this.timestamp = 0; //8
+        this.timestamp = Date.now() % 86400000; //4
         this.clientId = 0; //1
         this.x = 0; //2
         this.y = 0; //2
@@ -50,7 +50,7 @@ export class Event {
     	const w = new Writer(view);
 		
 		w.write("setUint8", this.type, 1); //commun à tous
-		w.write("setFloat64", this.timestamp, 8); //commun à tous
+		w.write("setUint32", this.timestamp, 4); //commun à tous
     	w.write("setUint8", this.clientId, 1); //commun à tous
 		
 		switch(this.type) {
@@ -91,7 +91,7 @@ export class Event {
     	const r = new Reader(view, offset);
  
  		received_event.type = r.read("getUint8", 1);
- 		received_event.timestamp = r.read("getFloat64", 8);
+ 		received_event.timestamp = r.read("getUint32", 4);
     	received_event.clientId = r.read("getUint8", 1);
     		 
     	switch(received_event.type) {
@@ -143,7 +143,6 @@ export class Event {
 export const test_event_serialization = () => {
 	const jaaj = new Event();
 	jaaj.type = DrawingEventType.DRAW;
-	jaaj.timestamp = 1763766859065;
 	jaaj.clientId = 69;
 	jaaj.x = 150;
 	jaaj.y = 150;
@@ -155,17 +154,17 @@ export const test_event_serialization = () => {
 	console.log(soos.byteLength);
 	
 	const leel = Event.deserialize(soos);
-	console.log(leel.type);
-	console.log(leel.timestamp);
-	console.log(leel.clientId);
-	console.log(leel.x);
-	console.log(leel.y);
-	console.log(leel.w);
-	console.log(leel.h);
-	console.log(leel.color["r"]);
-	console.log(leel.color["b"]);
-	console.log(leel.color["g"]);
-	console.log(leel.strokeId);
+	console.log(leel["event"].type);
+	console.log(leel["event"].timestamp);
+	console.log(leel["event"].clientId);
+	console.log(leel["event"].x);
+	console.log(leel["event"].y);
+	console.log(leel["event"].w);
+	console.log(leel["event"].h);
+	console.log(leel["event"].color["r"]);
+	console.log(leel["event"].color["b"]);
+	console.log(leel["event"].color["g"]);
+	console.log(leel["event"].strokeId);
 }
 
 export const test_event_serialization_big = () => {
