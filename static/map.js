@@ -16,14 +16,32 @@ export class Map {
   }
 
   setupHandlers() {
-    this.canvas.addEventListener("mousedown", ({ layerX: x, layerY: y }) => {
+    this.canvas.addEventListener("mousedown", (e) => {
+      const rect = this.canvas.getBoundingClientRect();
+      // 1. Calculate the ratio between screen pixels and this.canvas pixels
+      const scaleX = this.canvas.width / rect.width;
+      const scaleY = this.canvas.height / rect.height;
+
+      // 2. Apply this ratio to the coordinates
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+
       if (window.mode != "drawing") return;
       this.drawing = true;
       this.startPoint = { x, y };
       this.endPoint = { x, y };
     });
 
-    this.canvas.addEventListener("mousemove", ({ layerX: x, layerY: y }) => {
+    this.canvas.addEventListener("mousemove", (e) => {
+      const rect = this.canvas.getBoundingClientRect();
+      // 1. Calculate the ratio between screen pixels and this.canvas pixels
+      const scaleX = this.canvas.width / rect.width;
+      const scaleY = this.canvas.height / rect.height;
+
+      // 2. Apply this ratio to the coordinates
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+
       if (window.mode != "drawing") return;
       if (!this.drawing) return;
       this.endPoint = { x, y };
@@ -51,10 +69,7 @@ export class Map {
     });
   }
 
-  addZone({ x, y, w, h }) {
-    this.zones.push({ x, y, w, h, name: ""});
-    this.redraw();
-  }
+  
 
   getBoundingBox(p1, p2) {
     const x = Math.min(p1.x, p2.x);
