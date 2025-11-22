@@ -17,12 +17,14 @@ export class Map {
 
   setupHandlers() {
     this.canvas.addEventListener("mousedown", ({ layerX: x, layerY: y }) => {
+      if (window.mode != "drawing") return;
       this.drawing = true;
       this.startPoint = { x, y };
       this.endPoint = { x, y };
     });
 
     this.canvas.addEventListener("mousemove", ({ layerX: x, layerY: y }) => {
+      if (window.mode != "drawing") return;
       if (!this.drawing) return;
       this.endPoint = { x, y };
       this.redraw();
@@ -30,6 +32,8 @@ export class Map {
     });
 
     this.canvas.addEventListener("mouseup", async () => {
+      console.log(window.mode)
+      if (window.mode != "drawing") return;
       if (!this.drawing) return;
       this.drawing = false;
       let ev = new Event();
@@ -71,6 +75,7 @@ export class Map {
   }
 
   redraw() {
+    
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.zones.forEach(zone => this.drawRect(zone));
   }
