@@ -197,7 +197,7 @@ export class DrawingModule {
         const user_id = event.clientId;
 
         this.ctx.beginPath();
-        this.ctx.arc(event.x, event.y, 3, 0, 2 * Math.PI, false);
+        this.ctx.arc(event.x, event.y, event.strokeRadius, 0, 2 * Math.PI, false);
         this.ctx.fillStyle = `rgb(${this.drawingcolors[user_id].r}, ${this.drawingcolors[user_id].g}, ${this.drawingcolors[user_id].b})`;
         this.ctx.fill();
         this.ctx.lineWidth = 1;
@@ -212,7 +212,7 @@ export class DrawingModule {
                 this.ctx.lineTo(event.x, event.y);
                 this.ctx.strokeStyle = `rgb(${this.drawingcolors[user_id].r}, ${this.drawingcolors[user_id].g}, ${this.drawingcolors[user_id].b})`;
                 // console.log(event.color);
-                this.ctx.lineWidth = 2 * 3;
+                this.ctx.lineWidth = 2 * event.strokeRadius;
                 this.ctx.stroke();
             }
         }
