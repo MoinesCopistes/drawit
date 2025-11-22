@@ -3,7 +3,8 @@
 
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 	<title>DrawIt Canvas</title>
 	<link rel="stylesheet" href="/static/draw.css">
 </head>
@@ -25,18 +26,17 @@
 			<p id="count">5</p>
 		</div>
 
-		<div id="modeSwitch" class="ui-element" title="Toggle Mode">
-			<img class="show-in-drawing" src="/static/Icons/Move%20icon.svg" alt="Switch to View">
-
-			<img class="show-in-view" src="/static/Icons/Draw%20icon.svg" alt="Switch to Draw">
-		</div>
 	</div>
 
 
 	<div id="viewport">
 		<div id="canvas-container">
-			<canvas id="back" width="1600" height="900"></canvas>
-			<canvas id="top" width="1600" height="900"></canvas>
+			<div>
+				<canvas id="back" width="1920" height="1080"></canvas>
+			</div>
+			<div>
+				<canvas id="top"  width="1920" height="1080"></canvas>
+			</div>
 		</div>
 	</div>
 
@@ -114,6 +114,93 @@
 		if (!isDraw) {
 			map.setupHandlers();
 		}
+
+
+		class MovablePan {
+    constructor(id) {
+        this.e = document.getElementById(id);
+        this.scale = 1;
+        this.offsetX = 0;
+        this.offsetY = 0;
+
+        this.activeTouches = [];
+        this.startOffsetX = 0;
+        this.startOffsetY = 0;
+        this.startDistance = 0;
+        this.startScale = 1;
+        this.startMidpoint = { x: 0, y: 0 };
+
+        this.initEvents();
+        this.transform();
+    }
+
+    transform() {
+        this.e.style.transformOrigin = `0 0`;
+        this.e.style.transform = `translate(${this.offsetX}px, ${this.offsetY}px) scale(${this.scale})`;
+    }
+
+    getDistance(touches) {
+        const dx = touches[0].clientX - touches[1].clientX;
+        const dy = touches[0].clientY - touches[1].clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    getMidpoint(touches) {
+        return {
+            x: (touches[0].clientX + touches[1].clientX) / 2,
+            y: (touches[0].clientY + touches[1].clientY) / 2
+        };
+    }
+
+    initEvents() {
+        // Track touches globally
+        window.addEventListener("touchstart", (e) => {
+            if (e.touches.length >= 2) {
+                this.activeTouches = [e.touches[0], e.touches[1]];
+                this.startOffsetX = this.offsetX;
+                this.startOffsetY = this.offsetY;
+                this.startDistance = this.getDistance(this.activeTouches);
+                this.startScale = this.scale;
+                this.startMidpoint = this.getMidpoint(this.activeTouches);
+            }
+        }, { passive: false });
+
+        window.addEventListener("touchmove", (e) => {
+            if (this.activeTouches.length === 2 && e.touches.length >= 2) {
+								e.preventDefault()
+                // Find the two touches we are tracking
+                const touches = [e.touches[0], e.touches[1]];
+
+                const newDistance = this.getDistance(touches);
+                const newScale = this.startScale * (newDistance / this.startDistance);
+
+                const newMidpoint = this.getMidpoint(touches);
+
+                // Movement proportional to scale
+                const dx = (newMidpoint.x - this.startMidpoint.x) / newScale;
+                const dy = (newMidpoint.y - this.startMidpoint.y) / newScale;
+
+                // Apply proportional movement and scaling
+                this.offsetX = (this.startOffsetX + dx) * (newScale / this.startScale);
+                this.offsetY = (this.startOffsetY + dy) * (newScale / this.startScale);
+
+                this.scale = newScale;
+                this.transform();
+            }
+        }, { passive: false });
+
+        window.addEventListener("touchend", (e) => {
+            if (e.touches.length < 2) {
+                this.activeTouches = [];
+            }
+        });
+    }
+}
+
+// Initialize
+const mp = new MovablePan("canvas-container");
+
+		
 
 	</script>
 

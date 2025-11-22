@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #222;
+    }
+
+    .layered {
+        position: relative;
+        width: 300px;
+        height: 300px;
+    }
+
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: black;
+        width: 300px;
+        height: 300px;
+    }
+</style>
+</head>
+<body>
+    <div class="layered">
+        <canvas id="c1" width="300" height="300"></canvas>
+        <canvas id="c2" width="300" height="300"></canvas>
+    </div>
+</body>
+</html>
+
