@@ -40,7 +40,7 @@ export class Event {
         this.w = 0,  //2
         this.h = 0; //2
         this.color = {r: 255, g: 255, b: 255};
-        this.strokeId = 0; //1
+        this.strokeRadius = 30; //1
     }
     
     serialize() {
@@ -79,7 +79,7 @@ export class Event {
     		case DrawingEventType.DRAW :
     			w.write("setUint16", this.x, 2);
     			w.write("setUint16", this.y, 2);
-    			w.write("setUint8" , this.strokeId, 1);
+    			w.write("setUint8" , this.strokeRadius, 1);
     			break;
     		case DrawingEventType.END :
     			break;
@@ -122,7 +122,7 @@ export class Event {
     		case DrawingEventType.DRAW :
     			received_event.x = r.read("getUint16", 2);
     			received_event.y = r.read("getUint16", 2);
-    			received_event.strokeId = r.read("getUint8", 1);
+    			received_event.strokeRadius = r.read("getUint8", 1);
     			break;
     		case DrawingEventType.END :
     			break;
@@ -168,7 +168,7 @@ export const test_event_serialization = () => {
 	jaaj.y = 150;
 	jaaj.w = 50;
 	jaaj.h = 60;
-	jaaj.strokeId = 1;
+	jaaj.strokeRadius = 1;
 	
 	const soos = jaaj.serialize();
 	console.log(soos.byteLength);
@@ -184,7 +184,7 @@ export const test_event_serialization = () => {
 	console.log(leel["event"].color["r"]);
 	console.log(leel["event"].color["b"]);
 	console.log(leel["event"].color["g"]);
-	console.log(leel["event"].strokeId);
+	console.log(leel["event"].strokeRadius);
 }
 
 export const test_event_serialization_big = () => {
@@ -196,7 +196,7 @@ export const test_event_serialization_big = () => {
 	jaaj.y = 150;
 	jaaj.w = 50;
 	jaaj.h = 60;
-	jaaj.strokeId = 1;
+	jaaj.strokeRadius = 1;
 	
 	const soos = new Event();
 	soos.type = DrawingEventType.START;
@@ -206,7 +206,7 @@ export const test_event_serialization_big = () => {
 	soos.y = 150;
 	soos.w = 50;
 	soos.h = 60;
-	soos.strokeId = 1;
+	soos.strokeRadius = 1;
 	
 	const leel = new Event();
 	leel.type = DrawingEventType.ADD_ZONE;
@@ -216,7 +216,7 @@ export const test_event_serialization_big = () => {
 	leel.y = 150;
 	leel.w = 50;
 	leel.h = 60;
-	leel.strokeId = 1;
+	leel.strokeRadius = 1;
 	
 	const jaaj_ser = jaaj.serialize();
 	const soos_ser = soos.serialize();
