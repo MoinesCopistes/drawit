@@ -52,6 +52,12 @@
 			left: 20px;
 			opacity: 1;
 		}
+		
+		#radiusTools {
+			top: 80px;
+			left: 20px;
+			opacity: 1;
+		}
 
 		/* Hide color picker when not in drawing mode */
 		body.mode-view #colorTools {
@@ -136,3 +142,43 @@
 
 		}
 
+		/* Helper text */
+		.canvas-label {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			color: #94a3b8;
+			font-size: 2rem;
+			pointer-events: none;
+			user-select: none;
+		}
+
+		.status-bar {
+			position: fixed;
+			bottom: 20px;
+			left: 50%;
+			transform: translateX(-50%);
+			background: rgba(0, 0, 0, 0.7);
+			color: white;
+			padding: 8px 16px;
+			border-radius: 20px;
+			font-size: 0.875rem;
+			pointer-events: none;
+			opacity: 0.8;
+			z-index: 90;
+		}
+
+		/* Mobile adjustments */
+		@media (max-width: 915px) {
+			.status-bar {
+				/* We must repeat translateX(-50%) to keep it centered, then add the scale */
+				transform: translateX(-50%) scale(0.7);
+
+				/* Anchors the scaling to the bottom so it doesn't float upwards */
+				transform-origin: bottom center;
+
+				/* Optional: since it's smaller, you might want it slightly closer to the edge */
+				bottom: 10px;
+			}
+		}

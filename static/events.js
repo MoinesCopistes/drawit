@@ -39,26 +39,11 @@ export class Event {
         this.y = 0; //2
         this.w = 0,  //2
         this.h = 0; //2
-        this.color = {r: 255, g: 255, b: 255};
+        this.color = {r: 255, g: 255, b: 255}; //1, 1, and 1
         this.strokeRadius = 30; //1
     }
     
     serialize() {
-     	let size;
-     	switch(this.type) {
-     		case DrawingEventType.START :
-     			size = 14;
-     			break;
-     		case DrawingEventType.DRAW :
-     			size = 15;
-     			break;
-     		case DrawingEventType.END :
-     			size = 10;
-     			break;
-     		case DrawingEventType.ADD_ZONE :
-     			size = 18;
-     			break;
-     	}
     	
     	const buffer = new ArrayBuffer(100, { maxByteLength: 100 });
     	const view = new DataView(buffer);
@@ -75,11 +60,11 @@ export class Event {
 				w.write("setUint8", this.color["r"], 1);
 				w.write("setUint8", this.color["g"], 1);
 				w.write("setUint8", this.color["b"], 1);
+				w.write("setUint8" , this.strokeRadius, 1);
     			break;
     		case DrawingEventType.DRAW :
     			w.write("setUint16", this.x, 2);
-    			w.write("setUint16", this.y, 2);
-    			w.write("setUint8" , this.strokeRadius, 1);
+    			w.write("setUint16", this.y, 2);	
     			break;
     		case DrawingEventType.END :
     			break;
@@ -118,11 +103,11 @@ export class Event {
     			received_event.color["r"] = r.read("getUint8", 1);
 				received_event.color["g"] = r.read("getUint8", 1);
 				received_event.color["b"] = r.read("getUint8", 1);
+				received_event.strokeRadius = r.read("getUint8", 1);
     			break;
     		case DrawingEventType.DRAW :
     			received_event.x = r.read("getUint16", 2);
     			received_event.y = r.read("getUint16", 2);
-    			received_event.strokeRadius = r.read("getUint8", 1);
     			break;
     		case DrawingEventType.END :
     			break;

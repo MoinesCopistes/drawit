@@ -165,6 +165,7 @@ export class DrawingModule {
     constructor(canvaId) {
         this.PreviousPointsDict = {};//dictionary with key = clientId , value = points array object
         this.drawingcolors = {};//dictionary with key = clientId , value = color object
+        this.strokeRadiuses = {};//dictionary with key = clientId , value = stroke radius
         this.canvas = document.getElementById(canvaId)
         // console.log(canvaId, this.canvas)
         this.ctx = this.canvas.getContext("2d")
@@ -177,6 +178,7 @@ export class DrawingModule {
             //reset PreviousPointsDict for this clientId
             this.PreviousPointsDict[event.clientId] = [];
             this.drawingcolors[event.clientId] = event.color;
+            this.strokeRadiuses[event.clientId] = event.strokeRadius;
             this.drawEventsOnCanva(event);
         }
         else if (event.type === DrawingEventType.END) {
@@ -197,7 +199,7 @@ export class DrawingModule {
         const user_id = event.clientId;
 
         this.ctx.beginPath();
-        this.ctx.arc(event.x, event.y, event.strokeRadius, 0, 2 * Math.PI, false);
+        this.ctx.arc(event.x, event.y, `${this.strokeRadiuses[user_id]}`, 0, 2 * Math.PI, false);
         this.ctx.fillStyle = `rgb(${this.drawingcolors[user_id].r}, ${this.drawingcolors[user_id].g}, ${this.drawingcolors[user_id].b})`;
         this.ctx.fill();
         this.ctx.lineWidth = 1;
@@ -212,7 +214,7 @@ export class DrawingModule {
                 this.ctx.lineTo(event.x, event.y);
                 this.ctx.strokeStyle = `rgb(${this.drawingcolors[user_id].r}, ${this.drawingcolors[user_id].g}, ${this.drawingcolors[user_id].b})`;
                 // console.log(event.color);
-                this.ctx.lineWidth = 2 * event.strokeRadius;
+                this.ctx.lineWidth = 2 * `${this.strokeRadiuses[user_id]}`;
                 this.ctx.stroke();
             }
         }
@@ -255,6 +257,7 @@ export class DrawingModule {
                 ev.x = currX;
                 ev.y = currY;
                 ev.color = this.hexToRgbObject(document.getElementById('colorPicker').value);
+                ev.strokeRadius = document.getElementById('radiusPicker').value;
                 ev.clientId = this.client_id;
                 send_data(ev.serialize())
                 state.total_requests_sent += 1;
@@ -289,6 +292,7 @@ export class DrawingModule {
                     ev.y = currY;
                     ev.color = { r: 0, g: 0, b: 255 };
                     ev.clientId = this.client_id;
+                    
                     send_data(ev.serialize())
                     state.total_requests_sent += 1;
 
