@@ -25,8 +25,8 @@ async def feed(request: Request, ws: Websocket):
     async def send_loop():
         try:
             while True:
-                batch = await eventsBuffer.get_batch(client)
-                await ws.send(bytes(batch))
+                batch = bytes(await eventsBuffer.get_batch(client))
+                await ws.send(batch)
         except sanic.exceptions.WebsocketClosed:
             pass
 

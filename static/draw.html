@@ -46,19 +46,26 @@
 
 		const drawingModuleInstance = new DrawingModule("back");
 		const map = new Map("top");
+		let sleep = () => {};
+		if (document.location.href.includes("rewind")) {
+			sleep = (ms) => {
+			    return new Promise(resolve => setTimeout(resolve, ms));
+			}		
+		}
 
 		const sendMessage = await setupWebsocket(async (d) => {
 		  const events = Event.deserialize_list(await d.arrayBuffer());
-		  events.forEach((event) => {
-			if (event.type == DrawingEventType.ADD_ZONE) {
-				map.zones.push(event);
-				map.redraw();
-			} else {
-			drawingModuleInstance.HandleEvent(event);
+			for (let event of events) {
+				await sleep(1)
+				if (event.type == DrawingEventType.ADD_ZONE) {
+					map.zones.push(event);
+					map.redraw();
+				} else {
+				drawingModuleInstance.HandleEvent(event);
+				
+				}
 				
 			}
-				
-			});
 	  });
 
 		if (isDraw) {

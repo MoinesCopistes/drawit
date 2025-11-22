@@ -4,9 +4,10 @@ export class Map {
   constructor(mapId) {
     this.canvas = document.getElementById(mapId);
     this.ctx = this.canvas.getContext("2d");
-    this.ctx.font = "15px serif";
+    this.ctx.font = "25px serif";
     this.ctx.strokeStyle = "black";
-
+    this.ctx.lineWidth = 3;
+    this.ctx.textAlign = "center";
     this.zones = [];
     this.drawing = false;
     this.startPoint = null;
@@ -60,6 +61,10 @@ export class Map {
   drawRect({ x, y, w, h }) {
     this.ctx.beginPath();
     this.ctx.rect(x, y, w, h);
+    this.ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+    this.ctx.fill();
+    this.ctx.fillStyle = "black";
+    this.ctx.fillText("soleil", x+w/2, y+h/2)
     this.ctx.stroke();
   }
 
