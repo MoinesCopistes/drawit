@@ -159,8 +159,9 @@ class Point {
 export class DrawingModule {
     constructor(canvaId) {
         this.PreviousPointsDict = {};//dictionary with key = clientId , value = points array object
+        this.drawingcolors = {};//dictionary with key = clientId , value = color object
         this.canvas = document.getElementById(canvaId)
-        console.log(canvaId, this.canvas)
+        // console.log(canvaId, this.canvas)
         this.ctx = this.canvas.getContext("2d")
         this.client_id = Math.floor(Math.random() * 255); // client id between 0 and 255 will be later assigned by server
         // console.log("DrawingModule created with client_id:", this.client_id);
@@ -170,6 +171,7 @@ export class DrawingModule {
         if (event.type === DrawingEventType.START) {
             //reset PreviousPointsDict for this clientId
             this.PreviousPointsDict[event.clientId] = [];
+            this.drawingcolors[event.clientId] = event.color;
             this.drawEventsOnCanva(event);
         }
         else if (event.type === DrawingEventType.END) {
@@ -191,7 +193,7 @@ export class DrawingModule {
 
         this.ctx.beginPath();
         this.ctx.arc(event.x, event.y, 3, 0, 2 * Math.PI, false);
-        this.ctx.fillStyle = '#000000ff';
+        this.ctx.fillStyle = `rgb(${this.drawingcolors[user_id].r}, ${this.drawingcolors[user_id].g}, ${this.drawingcolors[user_id].b})`;
         this.ctx.fill();
         this.ctx.lineWidth = 1;
 
@@ -203,7 +205,8 @@ export class DrawingModule {
                 this.ctx.beginPath();
                 this.ctx.moveTo(lastPoint.x, lastPoint.y);
                 this.ctx.lineTo(event.x, event.y);
-                this.ctx.strokeStyle = '#000000ff';
+                this.ctx.strokeStyle = `rgb(${this.drawingcolors[user_id].r}, ${this.drawingcolors[user_id].g}, ${this.drawingcolors[user_id].b})`;
+                // console.log(event.color);
                 this.ctx.lineWidth = 2 * 3;
                 this.ctx.stroke();
             }
@@ -246,6 +249,7 @@ export class DrawingModule {
                 ev.type = DrawingEventType.START;
                 ev.x = currX;
                 ev.y = currY;
+                ev.color = this.hexToRgbObject(document.getElementById('colorPicker').value);
                 ev.clientId = this.client_id;
                 send_data(ev.serialize())
                 state.total_requests_sent += 1;
@@ -278,6 +282,7 @@ export class DrawingModule {
                     ev.type = DrawingEventType.DRAW;
                     ev.x = currX;
                     ev.y = currY;
+                    ev.color = { r: 0, g: 0, b: 255 };
                     ev.clientId = this.client_id;
                     send_data(ev.serialize())
                     state.total_requests_sent += 1;
@@ -303,15 +308,26 @@ export class DrawingModule {
     }
 
 
-    
+
+    hexToRgbObject(hex) {
+        // Remove the '#' if it exists
+        hex = hex.replace('#', '');
+
+        // Parse r, g, b
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+
+        return { r, g, b };
+    }
 
     //helper functions to help count the number of requests sent by DrawingModule
     start_timer() {
         console.log("Timer started");
-        state.start_timer = performance.now() ;
+        state.start_timer = performance.now();
         state.start_requests = state.total_requests_sent;
         // console.log("Start requests:", state.start_requests);
-        return performance.now() ;
+        return performance.now();
     }
     end_timer() {
         const end_time = performance.now();
