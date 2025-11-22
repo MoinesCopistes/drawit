@@ -1,6 +1,6 @@
 import sanic
 from sanic import Sanic, Request, Websocket
-from sanic.response import text
+from sanic.response import text, redirect
 from client import Client
 from buffer import EventBuffer
 import asyncio
@@ -18,6 +18,10 @@ snapshotAskEvent = bytes([4] + [0]*9)
 
 CONNECTED_EVENT = bytes([4, 0])
 DISCONNECTED_EVENT = bytes([5, 0])
+@app.route("/clear", methods=["GET"])
+async def clear(request: Request):
+    await eventsBuffer.clear()
+    return redirect("/draw")
 
 @app.websocket("/feed")
 async def feed(request: Request, ws: Websocket):
