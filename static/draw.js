@@ -6,9 +6,7 @@ import { Event, DrawingEventType } from "./events.js";
  
  
 // Toggle overlay
- colorMenuBtn.addEventListener('click', () => {
-   colorOverlay.style.display = colorOverlay.style.display === 'flex' ? 'none' : 'flex';
- });
+
 
 
 const isDraw = window.location.pathname == "/draw"
@@ -32,7 +30,7 @@ const radiusValue = document.getElementById('radiusValue');
 
 // Toggle overlay
 colorMenuBtn.addEventListener('click', () => {
-  colorOverlay.style.display = colorOverlay.style.display === 'flex' ? 'none' : 'flex';
+  colorOverlay.style.display =  'flex';
 });
 radiusSlider.addEventListener('input', () => {
   radiusValue.textContent = radiusSlider.value;
