@@ -9,8 +9,20 @@ import { Event, DrawingEventType } from "./events.js";
 
 
 
-window.mode = 'view';
-document.body.classList.add(`mode-${window.mode}`)
+const isDraw = window.location.pathname == "/draw"
+let element = document.getElementById("canvas-container")
+let instance = panzoom(element, {initialZoom: 0.5});
+
+if (isDraw) {
+
+    window.mode = 'view';
+    document.body.classList.add(`mode-${window.mode}`)
+} else {
+    window.mode = 'drawing';
+    document.body.classList.add(`mode-${window.mode}`)
+    instance.pause();
+
+}
 const modeBtn = document.getElementById('modeSwitch');
 const radiusSlider = document.getElementById('radiusSlider');
 const radiusValue = document.getElementById('radiusValue');
@@ -24,9 +36,6 @@ radiusSlider.addEventListener('input', () => {
   radiusValue.textContent = radiusSlider.value;
 });
 modeBtn.addEventListener('click', toggleMode);
-
-let element = document.getElementById("canvas-container")
-let instance = panzoom(element);
 
 function toggleMode() {
     if (window.mode === 'drawing') {
@@ -138,8 +147,6 @@ export class DrawingModule {
                 //create object event of type "end" : 
                 const ev = new Event();
                 ev.type = DrawingEventType.END;
-                ev.x = currX;
-                ev.y = currY;
                 ev.clientId = this.client_id;
                 send_data(ev.serialize())
                 return
