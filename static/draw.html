@@ -8,6 +8,9 @@
 	<link rel="stylesheet" href="/static/draw.css">
 	<script src="/static/external/qrcode.min.js"></script>
   <script src="/static/external/panzoom.min.js"></script>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 </head>
 
 
@@ -31,9 +34,6 @@
 
 		</div>
 
-		<div id="usersCount" title="Users connected">
-			<p id="count">5</p>
-		</div>
 
 		<div id="modeSwitch" title="Toggle Mode" class="button">
 			<img class="show-in-drawing" src="/static/Icons/Move%20icon.svg" alt="Switch to View">
@@ -41,7 +41,13 @@
 			<img class="show-in-view" src="/static/Icons/Draw%20icon.svg" alt="Switch to Draw">
 		</div>
 		
-		<div id="qrcode"></div>
+		<div style="pointer-events: none;">
+			<div id="usersCount" title="Users connected">
+				<p id="count">5</p>
+			</div>
+
+		</div>
+
 	</div>
 
 

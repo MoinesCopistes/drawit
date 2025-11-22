@@ -7,24 +7,30 @@ const colorOverlay = document.getElementById('colorOverlay');
 // Toggle overlay
 
 export function allotherthings() {
+     const isDraw = window.location.pathname == "/draw"
+     let element = document.getElementById("canvas-container")
+     const initialZoom = window.innerWidth * (0.43/1882)
+     let instance = panzoom(element, {bounds:true, boundPadding:0.5, maxZoom:1, minZoom:0.05, initialZoom: initialZoom});
+     instance.moveTo(window.innerWidth/2 - (parseInt(element.style.width) * initialZoom /2 ), window.innerHeight/2 - (parseInt(element.style.height) * initialZoom/2));
 
-    const isDraw = window.location.pathname == "/draw"
-    let element = document.getElementById("canvas-container")
-    let instance = panzoom(element, { initialZoom: 0.5 });
+    const modeBtn = document.getElementById('modeSwitch');
+    const radiusSlider = document.getElementById('radiusSlider');
+    const radiusValue = document.getElementById('radiusValue');
+    const tools = document.getElementById('toolstop');
+
 
     if (isDraw) {
 
         window.mode = 'view';
         document.body.classList.add(`mode-${window.mode}`)
     } else {
+        modeBtn.style.display = "none";
+        tools.style.display = "none";
         window.mode = 'drawing';
         document.body.classList.add(`mode-${window.mode}`)
         instance.pause();
 
     }
-    const modeBtn = document.getElementById('modeSwitch');
-    const radiusSlider = document.getElementById('radiusSlider');
-    const radiusValue = document.getElementById('radiusValue');
 
 
     // Toggle overlay
@@ -49,6 +55,7 @@ export function allotherthings() {
             document.body.classList.add('mode-drawing');
         }
     }
+
 }
 class Point {
     constructor(x, y) {

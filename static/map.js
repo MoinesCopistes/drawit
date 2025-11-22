@@ -4,10 +4,9 @@ export class Map {
   constructor(mapId) {
     this.canvas = document.getElementById(mapId);
     this.ctx = this.canvas.getContext("2d");
-    this.ctx.font = "25px serif";
+    this.ctx.font = "800 35px Inter";
     this.ctx.strokeStyle = "black";
     this.ctx.lineWidth = 3;
-    this.ctx.textAlign = "center";
     this.zones = [];
     this.drawing = false;
     this.startPoint = null;
@@ -86,10 +85,19 @@ export class Map {
   drawRect({ x, y, w, h, name }) {
     this.ctx.beginPath();
     this.ctx.rect(x, y, w, h);
-    this.ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+    this.ctx.fillStyle = "rgba(0, 0, 0, 0.03)";
     this.ctx.fill();
-    this.ctx.fillStyle = "black";
-    this.ctx.fillText(name || "", x+w/2, y+h/2)
+    this.ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+    const metrics = this.ctx.measureText(name)
+    console.log(metrics)
+    const paddingX = 30;
+    const paddingY = -30;
+    this.ctx.beginPath();
+    // this.ctx.rect(x, y, paddingX/2 + metrics.width + paddingX/2, -metrics.actualBoundingBoxAscent - paddingY);
+    this.ctx.fill();
+    this.ctx.beginPath();
+    this.ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+    this.ctx.fillText(name || "", x+paddingX/2, y + metrics.actualBoundingBoxAscent - paddingY/2)
     this.ctx.stroke();
   }
 
