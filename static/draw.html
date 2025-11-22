@@ -23,11 +23,11 @@
 		</div>
 	</div>
 
-	<div class="status-bar" id="statusBar">Drawing Mode</div>
 
 	<div id="viewport">
 		<div id="canvas-container">
-			<canvas id="Canva" width="2000" height="2000"></canvas>
+			<canvas id="Canva" width="1600" height="900"></canvas>
+			<!-- <canvas id="map" width="1600" height="900"></canvas> -->
 		</div>
 	</div>
 
@@ -37,6 +37,7 @@
 		import {setupWebsocket} from "/static/websockets.js";
 		import {DrawingModule} from '/static/draw.js';
   	import {Event, DrawingEventType} from "/static/events.js"
+		import {Map} from "/static/map.js"
 		const sendMessage = await setupWebsocket(async (d) => {
 		  const events = Event.deserialize_list(await d.arrayBuffer());
 		  events.forEach((event) => drawingModuleInstance.HandleEvent(event));
@@ -46,6 +47,8 @@
 		if (window.location.pathname == "/draw") {
 			drawingModuleInstance.listen(sendMessage);
 		}
+
+		const map = new Map("map");
 	</script>
 
 </body>

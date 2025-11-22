@@ -17,10 +17,10 @@ const state = {
     startX: 0,
     startY: 0,
     // Constraints
-    minScale: 0.5,
-    maxScale: 3,
-    canvasWidth: 2000,
-    canvasHeight: 2000,
+    minScale: 1,
+    maxScale: 1,
+    canvasWidth: 1600,
+    canvasHeight: 900,
     start_requests: 0,
     start_timer: 0,
     total_requests_sent: 0
