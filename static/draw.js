@@ -11,7 +11,7 @@ import { Event, DrawingEventType } from "./events.js";
 
 const isDraw = window.location.pathname == "/draw"
 let element = document.getElementById("canvas-container")
-let instance = panzoom(element, {bounds:true, boundPadding:0.5, initialZoom:0.5});
+let instance = panzoom(element, {bounds:true, boundPadding:0.5, maxZoom:1, minZoom:0.2, initialZoom:0.5});
 
 if (isDraw) {
 
