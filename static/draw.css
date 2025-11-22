@@ -66,6 +66,16 @@
 			opacity: 1;
 
 		}
+		
+		#qrcode {
+			top : 20px;
+			left : 1780px;
+		}
+		
+		#qrcode img {		
+			width : 100px;
+			height : 100px;
+		}
 
 		/* Hide color picker when not in drawing mode */
 		body.mode-view #colorTools {
