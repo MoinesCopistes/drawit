@@ -71,7 +71,7 @@ async def save(request):
         f.write(injection_block)
 
 
-    return response.text("done")
+    return text("done")
 
 @app.route("/eventdump.js")
 async def serve_file_from_disk(request):
