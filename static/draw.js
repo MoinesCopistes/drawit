@@ -1,3 +1,4 @@
+import { Event, DrawingEventType } from "./events.js";
 
 // --- State Management ---
 const state = {
@@ -21,8 +22,9 @@ const modeBtn = document.getElementById('modeSwitch');
 const statusBar = document.getElementById('statusBar');
 const container = document.getElementById('canvas-container');
 const viewport = document.getElementById('viewport');
-const canvas = document.getElementById('mainCanvas');
+const canvas = document.getElementById('DrawingCanva');
 const ctx = canvas.getContext('2d');
+modeBtn.addEventListener('click', toggleMode);
 
 // --- Mode Logic ---
 function toggleMode() {
@@ -143,7 +145,6 @@ viewport.addEventListener('wheel', (e) => {
 state.pointX = (window.innerWidth - state.canvasWidth) / 2;
 state.pointY = (window.innerHeight - state.canvasHeight) / 2;
 updateTransform();
-import { Event, DrawingEventType } from "./events.js";
 // This should take a canvas element and draw a list of events on it
 // (events from events.js)
 
@@ -159,20 +160,21 @@ export class DrawingModule {
     }
 
     HandleEvent(canva, event) {
+        if (state.mode == "drawing") {
 
-        if (event.type === DrawingEventType.START) {
-            //reset PreviousPointsDict for this clientId
-            this.PreviousPointsDict[event.clientId] = [];
-            this.drawEventsOnCanva(canva, event);
+            if (event.type === DrawingEventType.START) {
+                //reset PreviousPointsDict for this clientId
+                this.PreviousPointsDict[event.clientId] = [];
+                this.drawEventsOnCanva(canva, event);
+            }
+            else if (event.type === DrawingEventType.END) {
+                //clear PreviousPointsDict for this clientId
+                delete this.PreviousPointsDict[event.clientId];
+            }
+            else if (event.type === DrawingEventType.DRAW) {
+                this.drawEventsOnCanva(canva, event);
+            }
         }
-        else if (event.type === DrawingEventType.END) {
-            //clear PreviousPointsDict for this clientId
-            delete this.PreviousPointsDict[event.clientId];
-        }
-        else if (event.type === DrawingEventType.DRAW) {
-            this.drawEventsOnCanva(canva, event);
-        }
-
     }
 
     drawEventsOnCanva(canva, event) {
@@ -234,8 +236,13 @@ export class DrawingModule {
         // handle mouse events
         function findxy(res, e) {
             const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
+            // 1. Calculate the ratio between screen pixels and canvas pixels
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            // 2. Apply this ratio to the coordinates
+            const mouseX = (e.clientX - rect.left) * scaleX;
+            const mouseY = (e.clientY - rect.top) * scaleY;
 
             if (res === 'down') {
                 currX = mouseX;
