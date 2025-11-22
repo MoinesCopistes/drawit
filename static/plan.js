@@ -8,7 +8,6 @@ const state = {
     panning: false,
     panStartX: 0,
     panStartY: 0,
-    isDraggingZone: false,
     zoneStartX: 0,
     zoneStartY: 0,
     currentMouseX: 0,
@@ -34,7 +33,6 @@ const zoneInput = document.getElementById('zoneNameInput');
 state.pointX = (window.innerWidth - state.canvasWidth) / 2;
 state.pointY = (window.innerHeight - state.canvasHeight) / 2;
 updateTransform();
-redrawCanvas();
 
 // --- Logic ---
 
@@ -67,40 +65,6 @@ function getCanvasCoordinates(clientX, clientY) {
     };
 }
 
-// --- Rendering ---
-function redrawCanvas() {
-    ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
-
-    // Saved Zones
-    state.zones.forEach(zone => {
-        ctx.fillStyle = "rgba(37, 99, 235, 0.15)";
-        ctx.fillRect(zone.x, zone.y, zone.w, zone.h);
-        ctx.strokeStyle = "#2563eb";
-        ctx.lineWidth = 2;
-        ctx.setLineDash([]);
-        ctx.strokeRect(zone.x, zone.y, zone.w, zone.h);
-
-        // Draw truncated label
-        ctx.fillStyle = "#2563eb";
-        ctx.font = "bold 14px sans-serif";
-        let label = zone.desc;
-        if (label.length > 15) label = label.substring(0, 15) + "...";
-        ctx.fillText(label, zone.x + 5, zone.y + 20);
-    });
-
-    // Active Drag
-    if (state.mode === 'drawing' && state.isDraggingZone) {
-        const width = state.currentMouseX - state.zoneStartX;
-        const height = state.currentMouseY - state.zoneStartY;
-
-        ctx.fillStyle = "rgba(37, 99, 235, 0.05)";
-        ctx.fillRect(state.zoneStartX, state.zoneStartY, width, height);
-        ctx.strokeStyle = "#2563eb";
-        ctx.lineWidth = 2;
-        ctx.setLineDash([10, 5]);
-        ctx.strokeRect(state.zoneStartX, state.zoneStartY, width, height);
-    }
-}
 
 // --- Event Listeners ---
 
@@ -144,7 +108,6 @@ viewport.addEventListener('mousedown', (e) => {
 });
 
 window.addEventListener('mousemove', (e) => {
-    const coords = getCanvasCoordinates(e.clientX, e.clientY);
 
     if (state.mode === 'view' && state.panning) {
         e.preventDefault();
@@ -154,43 +117,12 @@ window.addEventListener('mousemove', (e) => {
         state.pointX = clamped.x;
         state.pointY = clamped.y;
         updateTransform();
-    } else if (state.mode === 'drawing' && state.isDraggingZone) {
-        state.currentMouseX = coords.x;
-        state.currentMouseY = coords.y;
-        redrawCanvas();
-    }
-});
+    } });
 
 window.addEventListener('mouseup', (e) => {
     if (state.mode === 'view') {
         state.panning = false;
-    } else if (state.mode === 'drawing' && state.isDraggingZone) {
-        state.isDraggingZone = false;
-
-        const w = state.currentMouseX - state.zoneStartX;
-        const h = state.currentMouseY - state.zoneStartY;
-
-        if (Math.abs(w) > 10 && Math.abs(h) > 10) {
-            const newZone = {
-                x: w < 0 ? state.zoneStartX + w : state.zoneStartX,
-                y: h < 0 ? state.zoneStartY + h : state.zoneStartY,
-                w: Math.abs(w),
-                h: Math.abs(h),
-                desc: zoneInput.value.trim() // Guaranteed to exist due to mousedown check
-            };
-
-            state.zones.push(newZone);
-            statusBar.innerText = `Zone Created: "${newZone.desc}"`;
-
-            // Clear input for next one (optional - keeping it allows rapid creation of same type)
-            // zoneInput.value = ""; 
-
-            statusBar.classList.add('highlight');
-            setTimeout(() => statusBar.classList.remove('highlight'), 300);
-        }
-        redrawCanvas();
-    }
-});
+}});
 
 viewport.addEventListener('click', (e) => {
     if (state.mode !== 'view') return;
