@@ -58,17 +58,16 @@
 			transform: scale(1);
 		}
 
-
-
-
-		#qrcode {
-			top: 5px;
-			left: 20px;
+		#qrOverlay{
+			place-items:center;
+			
 		}
 
-		#qrcode img {
-			width: 200px;
-			height: 200px;
+		#qrcode img{
+		
+			width : 400px;
+			padding:20px;
+			background-color:white;
 		}
 
 		#usersCount {

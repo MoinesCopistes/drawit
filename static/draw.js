@@ -1,7 +1,7 @@
 import { Event, DrawingEventType } from "./events.js";
 const colorMenuBtn = document.getElementById('colorMenuBtn');
 const colorOverlay = document.getElementById('colorOverlay');
-
+const qrOverlay = document.getElementById('qrOverlay');
 
 
 // Toggle overlay
@@ -39,6 +39,15 @@ export function allotherthings() {
     colorMenuBtn.addEventListener('click', () => {
         colorOverlay.style.display = 'flex';
     });
+    window.addEventListener("keydown", function(event) {
+		if (event.key === "q") {
+		    if(qrOverlay.style.display === 'flex') {
+		    	qrOverlay.style.display = 'none';
+		    } else {
+		    	qrOverlay.style.display = 'flex';
+		    }
+		}
+	});
     radiusSlider.addEventListener('input', () => {
         radiusValue.textContent = radiusSlider.value;
     });

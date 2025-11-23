@@ -22,6 +22,10 @@
 		<div id="colorOverlay" class="overlay">
 			<div id="colorGrid" class="color-grid"></div>
 		</div>
+		
+		<div id="qrOverlay" class="overlay">
+			<div id="qrcode" class="qrcode"></div>
+		</div>
 
 		<div class="top" id="toolstop">
 			<div class="toolbar">
@@ -74,6 +78,8 @@
 		} else {
 			const qr = document.getElementById("qrcode");
 			qr.style.display = "none";
+			const ov = document.getElementById("qrOverlay");
+			ov.style.display = "none";
 		}
 	</script>
 
@@ -90,6 +96,7 @@
 		//colors of the palette !
 		let selectedColor = drawingModuleInstance.palette[0];//base color
 		colorMenuBtn.style.backgroundColor = selectedColor; //set the initial color of the background button
+		
 		colorOverlay.style.display = 'none';
 		// Create color swatches
 		drawingModuleInstance.palette.forEach(hex => {
@@ -107,6 +114,9 @@
 			});
 			document.getElementById("colorGrid").appendChild(swatch);
 		});
+		
+		//qr code overlay
+		qrOverlay.style.display = 'flex';
 
 		// 1. Select the slider and value span
 		const radiusSlider = document.getElementById("radiusSlider");
