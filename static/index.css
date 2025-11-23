@@ -1,5 +1,30 @@
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+			/* Prevent default touch actions like pull-to-refresh */
+			touch-action: none;
+			-webkit-user-select: none; /* Safari */        
+			-moz-user-select: none; /* Firefox */
+			-ms-user-select: none; /* IE10+/Edge */
+			user-select: none; /* Standard */
+		}
+
+		body {
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+			background-color: #e5e5e5;
+			overflow: hidden;
+			/* Prevent native scroll */
+			width: 100vw;
+			height: 100vh;
+			position: relative;
+			display: grid;
+			place-items: center;
+		}
+  
   #viewport, #canvas-container, #canva_index {
-        width: 100%;
-        height: 100%;
+        width: calc(0.43*3840px);
+        height: auto;
         display: block;
+        background-color: white;
     }
