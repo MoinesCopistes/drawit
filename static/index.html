@@ -21,7 +21,7 @@
 			<canvas id="canva_index" width="3840" height="2160"></canvas>
 		</div>
 		<div>
-			<a href="/plan" id="startbtn"> </a>
+			<a id="startbtn"> </a>
 		</div>
 	</div>
 	</div>
@@ -34,6 +34,9 @@
 		const params = new URLSearchParams(window.location.search);
 		const dumpName = params.get("name") || "index"; // default to "index" for index.html
 		let dumpFile;
+		const blkpath = `/static/saved/blank.js`;
+		const blkdumpFile = await import(blkpath);
+
 		//tries to import the specified dump file, falls back to index.js if not found
 		try {
 			const path = `/static/saved/${dumpName}.js`;
@@ -71,7 +74,17 @@
 		document.getElementById("startbtn").classList.add("enabled")
 		
 		const audio = new Audio('static/assets/button.wav');
-		document.getElementById("startbtn").addEventListener("click", function () {
+		document.getElementById("startbtn").addEventListener("click", async () => {
+							const events = Event.deserialize_list(blkdumpFile.dumpBytes.buffer);
+							for (let i = 0; i < events.length; i++) {
+								const event = events[i];
+								if (i % 5 === 0) {
+									await sleep(1)
+								}
+								drawingModuleInstance.HandleEvent(event);
+
+							}
+
             audio.play();
             window.location.replace(window.location.origin + "/plan");
         });

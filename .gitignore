@@ -3,5 +3,5 @@ __pycache__/
 static/saved/*.js
 
 !static/saved/end.js
-
 !static/saved/index.js
+!static/saved/blank.js
