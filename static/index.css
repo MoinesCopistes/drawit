@@ -25,7 +25,9 @@
 		  display: grid;
 		  place-items: center;
 		}
-
+		#viewport {
+			background-color: white;
+		}
 		#viewport,
 		#canvas-container,
 		#canva_index {
