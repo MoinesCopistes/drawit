@@ -82,6 +82,7 @@
 		import {DrawingModule, allotherthings} from '/static/draw.js';
 		import {Event, DrawingEventType} from "/static/events.js"
 		import {Map} from "/static/map.js"
+
 		const isDraw = window.location.pathname == "/draw"
 		allotherthings()
 		const drawingModuleInstance = new DrawingModule("back");
@@ -106,6 +107,33 @@
 			});
 			document.getElementById("colorGrid").appendChild(swatch);
 		});
+
+		// 1. Select the slider and value span
+		const radiusSlider = document.getElementById("radiusSlider");
+		const radiusValueDisplay = document.getElementById("radiusValue");
+
+		// 2. Define the update function
+		const updateSliderThumb = () => {
+			const val = radiusSlider.value;
+
+			// Update the text number
+			radiusValueDisplay.innerText = val;
+
+			// Update the CSS variable on the slider element itself
+			radiusSlider.style.setProperty('--thumb-radius', `${val * 0.8}px`);
+
+			// Optional: Update drawing module radius immediately if needed
+			if (typeof drawingModuleInstance !== 'undefined') {
+				// Assuming your drawing module has a property for radius
+				// drawingModuleInstance.radius = val; 
+			}
+		};
+
+		// 3. Add the Event Listener
+		radiusSlider.addEventListener("input", updateSliderThumb);
+
+		// 4. Run once on load to set initial size (fixes the "pop" on first click)
+		updateSliderThumb();
 
 		let sleep = () => { };
 		if (document.location.href.includes("rewind")) {
