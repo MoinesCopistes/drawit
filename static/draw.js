@@ -110,7 +110,7 @@ export class DrawingModule {
 
         this.ctx.beginPath();
         //safety check for stroke radius (dont want it to go TOO bad would we ?)
-        const radius = Math.pow(15, Math.min(15, Number(this.strokeRadiuses[user_id]))/15);
+        const radius = Math.pow(20, Math.min(20, Number(this.strokeRadiuses[user_id]))/20);
         this.ctx.arc(event.x, event.y, radius, 0, 2 * Math.PI, false);
         this.ctx.fillStyle = `rgb(${this.drawingcolors[user_id].r}, ${this.drawingcolors[user_id].g}, ${this.drawingcolors[user_id].b})`;
         this.ctx.fill();

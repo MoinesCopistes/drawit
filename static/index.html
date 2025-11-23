@@ -13,12 +13,15 @@
 
 <body>
 
-	
+
 
 
 	<div id="viewport">
 		<div id="canvas-container">
 			<canvas id="canva_index" width="3840" height="2160"></canvas>
+		</div>
+		<div>
+			<a href="/plan" id="startbtn"> </a>
 		</div>
 	</div>
 	</div>
@@ -49,18 +52,20 @@
 		//colors of the palette !
 
 		let sleep = () => { };
-			sleep = (ms) => {
-				return new Promise(resolve => setTimeout(resolve, ms));
-			}
-		
+		sleep = (ms) => {
+			return new Promise(resolve => setTimeout(resolve, ms));
+		}
+
 
 
 		const events = Event.deserialize_list(dumpBytes.buffer);
 		for (let i = 0; i < events.length; i++) {
 			const event = events[i];
-			await sleep(2)
+			if (i % 5 === 0) {
+				// await sleep(1)
+			}
 			drawingModuleInstance.HandleEvent(event);
-				
+
 		}
 
 	</script>
