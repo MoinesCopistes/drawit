@@ -1,5 +1,22 @@
-  #viewport, #canvas-container, #canva_index {
-        width: 100%;
-        height: 100%;
-        display: block;
-    }
+  #viewport,
+  #canvas-container,
+  #canva_index {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+#startbtn {
+    position: absolute;
+    top: 50%;                /* Vertical center */
+    left: 15%;               /* Horizontal center */
+    width: 900px;            /* Button width */
+    height: 200px;           /* Button height */
+    background-color: #00000000; /* Green color */
+    display: block;
+    cursor: pointer;
+    text-decoration: none;   /* Remove underline */
+}
+#startbtn:hover {
+    background-color: #00000005; /* Slightly darker green */
+}
