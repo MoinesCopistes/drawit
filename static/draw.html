@@ -32,7 +32,7 @@
 				<div id="colorMenuBtn" class="colorbtn"></div>
 
 				<div id="radiusTools" title="Choose pen radius">
-					<input type="range" id="radiusSlider" min="1" max="20" value="8">
+					<input type="range" id="radiusSlider" min="1" max="50" value="8">
 					<span id="radiusValue">8</span>
 				</div>
 
@@ -130,7 +130,7 @@
 			radiusValueDisplay.innerText = val;
 
 			// Update the CSS variable on the slider element itself
-			radiusSlider.style.setProperty('--thumb-radius', `${val * 0.8}px`);
+			radiusSlider.style.setProperty('--thumb-radius', `${Math.sqrt((val+1) * 0.8)}px`);
 
 			// Optional: Update drawing module radius immediately if needed
 			if (typeof drawingModuleInstance !== 'undefined') {
