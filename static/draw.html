@@ -82,21 +82,8 @@
 		import {DrawingModule, allotherthings} from '/static/draw.js';
 		import {Event, DrawingEventType} from "/static/events.js"
 		import {Map} from "/static/map.js"
-		
-		//audio
-		const audio = new Audio('assets/button.wav');
 
 		const isDraw = window.location.pathname == "/draw"
-		
-		if(isDraw) {
-			document.getElementById("modeSwitch").addEventListener("click", function () {
-				audio.play();
-			});
-			document.getElementById("colorMenuBtn").addEventListener("click", function () {
-				audio.play();
-			});
-		}
-		
 		allotherthings()
 		const drawingModuleInstance = new DrawingModule("back");
 		const map = new Map("top");
@@ -110,7 +97,6 @@
 			swatch.classList.add("color-swatch");
 			swatch.style.backgroundColor = hex;
 			swatch.addEventListener('click', () => {
-				audio.play();
 				selectedColor = hex;
 				colorMenuBtn.style.backgroundColor = hex;
 				colorOverlay.style.display = 'none';

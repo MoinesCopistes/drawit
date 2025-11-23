@@ -11,7 +11,7 @@ export class Map {
     this.drawing = false;
     this.startPoint = null;
     this.endPoint = null;
-
+	this.aud = new Audio("static/assets/button.wav");
   }
 
   setupHandlers() {
@@ -73,6 +73,7 @@ export class Map {
       ev.w = box.w;
       ev.h = box.h;
       ev.name = name;
+      this.aud.play();
       await window.socket.send(ev.serialize())
       // this.addZone(this.getBoundingBox(this.startPoint, this.endPoint));
       // this.redraw();

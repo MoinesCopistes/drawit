@@ -12,7 +12,6 @@ app.static("/", "./static/index.html", name="index")
 app.static("/plan", "./static/draw.html", name="plan")
 app.static("/draw", "./static/draw.html", name="draw")
 app.static("/load", "./static/index.html", name="load")
-app.static("/assets", "./assets/", name="assets"); 
 connections = []
 eventsBuffer = EventBuffer()
 snapshotAskEvent = bytes([4] + [0]*9)
