@@ -97,7 +97,6 @@ export class Map {
     this.ctx.fill();
     this.ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
     const metrics = this.ctx.measureText(name)
-    console.log(metrics)
     const paddingX = 30;
     const paddingY = -30;
     this.ctx.beginPath();

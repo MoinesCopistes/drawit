@@ -87,7 +87,6 @@ export class DrawingModule {
             this.drawingcolors[event.clientId] = event.color;
             this.strokeRadiuses[event.clientId] = event.strokeRadius;
             this.drawEventsOnCanva(event);
-            console.log("yobro");
         }
         else if (event.type === DrawingEventType.END) {
             //clear PreviousPointsDict for this clientId
