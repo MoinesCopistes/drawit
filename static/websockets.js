@@ -9,9 +9,17 @@ export const setupWebsocket = async (eventCallback) => {
   const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
   const url = `${wsProtocol}//${location.host}/feed`;
   window.socket = new WebSocket(url);
-
-  window.socket.addEventListener("message", (event) => {
-    eventCallback(event.data)
+  window.client_id = -1
+  window.socket.addEventListener("message", async (event) => {
+    if (window.client_id == -1) {
+      window.client_id = 999
+      const view = new Uint8Array(await event.data.arrayBuffer());
+      window.client_id = view[0];
+      console.log("Got ID: ", window.client_id)
+    }
+    else {
+      eventCallback(event.data)
+    }
   })
 
   const waitForOpen = () => {

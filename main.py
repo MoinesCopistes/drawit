@@ -32,6 +32,7 @@ async def feed(request: Request, ws: Websocket):
     client_id = len(connections)
     client = Client(client_id, ws)
     await ws.send(bytes([client_id]))
+    # print("doneee")
     connections.append(client)
     await eventsBuffer.append(CONNECTED_EVENT)
 
@@ -39,6 +40,8 @@ async def feed(request: Request, ws: Websocket):
         try:
             while True:
                 batch = bytes(await eventsBuffer.get_batch(client))
+                if len(batch) == 0:
+                    continue
                 await ws.send(batch)
         except sanic.exceptions.WebsocketClosed:
             pass
