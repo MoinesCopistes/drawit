@@ -139,6 +139,10 @@ func (h *Hub) broadcastBatch() {
 				offset += len(e)
 			}
 
+			if (totalSize == 0) {
+				continue;
+			}
+
 			err := client.conn.WriteMessage(websocket.BinaryMessage, payload)
 			if err != nil {
 				log.Printf("Erreur écriture client %d: %v", client.id, err)

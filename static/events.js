@@ -36,7 +36,7 @@ export class Event {
     constructor() {
         this.type = 0; //1
         // this.timestamp = Date.now() % 86400000; //4
-        this.clientId = 0; //1
+        this.clientId = window.client_id; //1
         this.x = 0; //2
         this.y = 0; //2
         this.w = 0,  //2
