@@ -16,6 +16,10 @@ connections = []
 eventsBuffer = EventBuffer()
 snapshotAskEvent = bytes([4] + [0]*9)
 
+@app.before_server_start
+async def start_tick_loop(app, loop):
+    app.add_task(eventsBuffer.tick_loop())
+
 CONNECTED_EVENT = bytes([4, 0])
 DISCONNECTED_EVENT = bytes([5, 0])
 @app.route("/clear", methods=["GET"])
@@ -27,6 +31,7 @@ async def clear(request: Request):
 async def feed(request: Request, ws: Websocket):
     client_id = len(connections)
     client = Client(client_id, ws)
+    await ws.send(bytes([client_id]))
     connections.append(client)
     await eventsBuffer.append(CONNECTED_EVENT)
 
