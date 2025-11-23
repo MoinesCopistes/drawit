@@ -42,6 +42,8 @@ export function allotherthings() {
     radiusSlider.addEventListener('input', () => {
         radiusValue.textContent = radiusSlider.value;
     });
+    radiusValue.textContent = radiusSlider.value;
+
     modeBtn.addEventListener('click', toggleMode);
 
     function toggleMode() {
