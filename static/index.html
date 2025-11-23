@@ -67,7 +67,14 @@
 			drawingModuleInstance.HandleEvent(event);
 
 		}
+		
 		document.getElementById("startbtn").classList.add("enabled")
+		
+		const audio = new Audio('assets/button.wav');
+		document.getElementById("startbtn").addEventListener("click", function () {
+            audio.play();
+            window.location.replace(window.location.origin + "/plan");
+        });
 
 	</script>
 
