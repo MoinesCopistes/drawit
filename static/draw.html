@@ -78,10 +78,10 @@
 	</script>
 
 	<script type="module">
-		import {setupWebsocket} from "/static/websockets.js";
-		import {DrawingModule, allotherthings} from '/static/draw.js';
-		import {Event, DrawingEventType} from "/static/events.js"
-		import {Map} from "/static/map.js"
+		import { setupWebsocket } from "/static/websockets.js";
+		import { DrawingModule, allotherthings } from '/static/draw.js';
+		import { Event, DrawingEventType } from "/static/events.js"
+		import { Map } from "/static/map.js"
 
 		const isDraw = window.location.pathname == "/draw"
 		allotherthings()
@@ -175,8 +175,42 @@
 
 		if (!isDraw) {
 			map.setupHandlers();
-		}
+			document.addEventListener('keydown', async function (event) {
+				// Check if the pressed key is the spacebar (key code 32 or key ' ')
+				if (event.key === ' ' || event.keyCode === 32) {
+					// Prevent the default action (e.g., scrolling down if focus is on the page body)
+					event.preventDefault();
 
+					fetch('/save?name=presentationdrawing')
+					const dumpFile = await import('/static/saved/end.js');
+					const dumpBytes = dumpFile.dumpBytes;
+					const events = Event.deserialize_list(dumpBytes.buffer);
+
+					console.log(`Replaying ${events.length} events...`);
+
+					let sleep = () => { };
+					sleep = (ms) => {
+						return new Promise(resolve => setTimeout(resolve, ms));
+
+					}
+					for (let i = 0; i < events.length; i++) {
+						const event = events[i];
+						if (i % 3 === 0) {
+							await sleep(1)
+						}
+						// during replay, forward only start/draw/end events to the websocket
+						if (event.type === DrawingEventType.START || event.type === DrawingEventType.DRAW || event.type === DrawingEventType.END) {
+							//snd the msg to websocket
+							const eventBytes = event.serialize();
+
+							// Use the sendMessage function to forward the raw bytes to the server
+							sendMessage(eventBytes);
+						}
+					}
+				}
+			});
+
+		}
 
 	</script>
 

@@ -89,7 +89,6 @@ export class DrawingModule {
             this.drawingcolors[event.clientId] = event.color;
             this.strokeRadiuses[event.clientId] = event.strokeRadius;
             this.drawEventsOnCanva(event);
-            console.log("yobro");
         }
         else if (event.type === DrawingEventType.END) {
             //clear PreviousPointsDict for this clientId
@@ -110,7 +109,8 @@ export class DrawingModule {
 
         this.ctx.beginPath();
         //safety check for stroke radius (dont want it to go TOO bad would we ?)
-        const radius = Math.pow(20, Math.min(20, Number(this.strokeRadiuses[user_id]))/20);
+        const radius = this.strokeRadiuses[user_id];
+        console.log("radius:", radius);
         this.ctx.arc(event.x, event.y, radius, 0, 2 * Math.PI, false);
         this.ctx.fillStyle = `rgb(${this.drawingcolors[user_id].r}, ${this.drawingcolors[user_id].g}, ${this.drawingcolors[user_id].b})`;
         this.ctx.fill();

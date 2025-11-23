@@ -1,2 +1,7 @@
-__pycache__
+__pycache__/
+
 static/saved/*.js
+
+!static/saved/end.js
+
+!static/saved/index.js
