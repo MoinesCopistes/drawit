@@ -119,7 +119,6 @@ export class DrawingModule {
         this.ctx.beginPath();
         //safety check for stroke radius (dont want it to go TOO bad would we ?)
         const radius = this.strokeRadiuses[user_id];
-        console.log("radius:", radius);
         this.ctx.arc(event.x, event.y, radius, 0, 2 * Math.PI, false);
         this.ctx.fillStyle = `rgb(${this.drawingcolors[user_id].r}, ${this.drawingcolors[user_id].g}, ${this.drawingcolors[user_id].b})`;
         this.ctx.fill();
@@ -128,7 +127,8 @@ export class DrawingModule {
         //if already points for user_id in PreviousPointsDict, create a line between last point and current point
         if (user_id in this.PreviousPointsDict) {
             const pointsArray = this.PreviousPointsDict[user_id];
-            if (pointsArray.length > 0) {
+            console.log(event.x, event.y);
+            if (pointsArray.length > 0 && Math.abs(pointsArray[pointsArray.length - 1].x - event.x)<2000 && Math.abs(pointsArray[pointsArray.length - 1].y - event.y)<2000) {
                 const lastPoint = pointsArray[pointsArray.length - 1];
                 this.ctx.beginPath();
                 this.ctx.moveTo(lastPoint.x, lastPoint.y);
