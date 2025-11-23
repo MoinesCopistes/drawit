@@ -62,11 +62,12 @@
 		for (let i = 0; i < events.length; i++) {
 			const event = events[i];
 			if (i % 5 === 0) {
-				//await sleep(1)
+				await sleep(1)
 			}
 			drawingModuleInstance.HandleEvent(event);
 
 		}
+		document.getElementById("startbtn").classList.add("enabled")
 
 	</script>
 

@@ -50,10 +50,10 @@
 		  background-color: transparent ;
 		  /* Green color */
 		  display: block;
-		  cursor: pointer;
 		  text-decoration: none;
 		  z-index: 1;
 		  pointer-events: all;
+		  cursor: default;
 
 		  /* Remove underline */
 		}
@@ -70,7 +70,8 @@
 			border-radius: 5px;
 
 		}
-		#startbtn:hover::before {
+		#startbtn.enabled:hover::before {
 			transform: scaleX(1);
+		  cursor: pointer;
 
 		}
