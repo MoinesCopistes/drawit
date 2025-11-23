@@ -191,7 +191,6 @@ export class DrawingModule {
                 ev.color = this.currentColor;
                 //console.log("current color in draw.js:", this.currentColor);
                 ev.strokeRadius = document.getElementById('radiusSlider').value;
-                ev.strokeRadius = 200
                 send_data(ev.serialize())
                 //self.HandleEvent(canvaId, ev);
 
