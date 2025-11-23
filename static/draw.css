@@ -27,9 +27,6 @@
 			pointer-events: none;
 		}
 
-		.ui-layer div {
-			pointer-events: all;
-		}
 
 		.ui-layer .top {
 			width: 100%;
@@ -58,11 +55,6 @@
 
 
 
-		#usersCount {
-			top: 130px;
-			left: 20px;
-			opacity: 1;
-		}
 		
 		#qrcode {
 			top : 5px;
@@ -70,9 +62,23 @@
 		}
 		
 		#qrcode img {		
-			width : 100px;
-			height : 100px;
+			width : 200px;
+			height : 200px;
 		}
+
+		#usersCount {
+			position: absolute;
+			bottom: 20px;
+			right: 20px;
+			background-color: #f39c12;
+			color: white;
+			font-family: Inter;
+			font-weight: 700;
+			padding: 10px 20px;
+			border-radius: 30px;
+			display: flex;
+		}
+		
 
 		/* Hide color picker when not in drawing mode */
 		body.mode-view #colorTools {
@@ -103,6 +109,7 @@
 			border-radius: 20px;
 			-webkit-box-shadow: 5px 5px 15px -12px #000000; 
 			box-shadow: 5px 5px 15px -12px #000000;
+			pointer-events: all !important;
 		}
 
 
@@ -197,6 +204,8 @@
 			height: 80px;
 			border-radius: 50px;
 			border: 5px solid white;
+			pointer-events: all;
+
 		}
 		
 		.colorbtn {
@@ -205,6 +214,12 @@
 			border-radius: 50px;
 			margin-right: 25px;
 			cursor: pointer;
+			pointer-events: all;
+		}
+
+		#radiusTools {
+						pointer-events: all;
+
 		}
 
 		/* Mobile adjustments */
