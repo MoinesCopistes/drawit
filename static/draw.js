@@ -77,7 +77,7 @@ export class DrawingModule {
         this.ctx = this.canvas.getContext("2d")
         this.client_id = Math.floor(Math.random() * 255); // client id between 0 and 255 will be later assigned by server
         // console.log("DrawingModule created with client_id:", this.client_id);
-        this.palette = ["#21B799", "#714B67", "#017E84", "#8F8F8F", "#E46E78", "#5B899E", "#E4A900", "#F75110FF", "#ea2d5f", "#b83e8b", "#755095", "#3c527f", "#0067df", "#ffffff", "#000000"];
+        this.palette = ["#21B799", "#714B67", "#017E84", "#8F8F8F", "#E46E78", "#5B899E", "#E4A900", "#705202", "#ea2d5f", "#b83e8b", "#755095", "#3c527f", "#0067df", "#ffffff", "#000000"];
         this.currentColor = this.hexToRgbObject(this.palette[0]); // default color is black
 
     }
