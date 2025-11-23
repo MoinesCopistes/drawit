@@ -39,15 +39,17 @@ export function allotherthings() {
     colorMenuBtn.addEventListener('click', () => {
         colorOverlay.style.display = 'flex';
     });
-    window.addEventListener("keydown", function(event) {
-		if (event.key === "q") {
-		    if(qrOverlay.style.display === 'flex') {
-		    	qrOverlay.style.display = 'none';
-		    } else {
-		    	qrOverlay.style.display = 'flex';
-		    }
-		}
-	});
+    if(!isDraw) {
+		window.addEventListener("keydown", function(event) {
+			if (event.key === "q") {
+				if(qrOverlay.style.display === 'flex') {
+					qrOverlay.style.display = 'none';
+				} else {
+					qrOverlay.style.display = 'flex';
+				}
+			}
+		});
+	}
     radiusSlider.addEventListener('input', () => {
         radiusValue.textContent = radiusSlider.value;
     });

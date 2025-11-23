@@ -60,7 +60,7 @@
 
 		#qrOverlay{
 			place-items:center;
-			
+			display:none;
 		}
 
 		#qrcode img{
