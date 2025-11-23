@@ -4,7 +4,7 @@ export class Map {
   constructor(mapId) {
     this.canvas = document.getElementById(mapId);
     this.ctx = this.canvas.getContext("2d");
-    this.ctx.font = "800 35px Inter";
+    this.ctx.font = "800 50px Inter";
     this.ctx.strokeStyle = "black";
     this.ctx.lineWidth = 3;
     this.zones = [];
